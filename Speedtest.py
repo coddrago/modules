@@ -36,7 +36,7 @@ class SpeedtestMod(loader.Module):
 
     strings = {
         "name": "Speedtest",
-        "author": "@codrago",
+        "author": "@nalinormods",
         "running": "<emoji document_id=5258258882022612173>⏲</emoji> <b>Checking your internet speed...</b>",
         "result": (
             "<b><emoji document_id=5962848855341928446>⬇️</emoji> Download: <code>{download}</code> MBit/s</b>\n"
