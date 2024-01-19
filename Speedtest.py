@@ -37,7 +37,7 @@ class SpeedtestMod(loader.Module):
     strings = {
         "name": "Speedtest",
         "author": "@nalinormods",
-        "running": "<emoji document_id=5258258882022612173>⏲</emoji> <b>Checking your internet speed...</b>",
+        "running": "<emoji document_id=5334904192622403796>🫥</emoji> <b>Checking your internet speed...</b>",
         "result": (
             "<b><emoji document_id=5962848855341928446>⬇️</emoji> Download: <code>{download}</code> MBit/s</b>\n"
             "<b><emoji document_id=5974082402434157917>🎙</emoji> Upload: <code>{upload}</code> MBit/s</b>\n"
@@ -48,7 +48,7 @@ class SpeedtestMod(loader.Module):
     strings_ru = {
         "_cls_doc": "Проверяет скорость интернета на вашем сервере",
         "_cmd_doc_speedtest": "Проверить скорость интернета",
-        "running": "<emoji document_id=5258258882022612173>⏲</emoji> <b>Проверяем скорость интернета...</b>",
+        "running": "<emoji document_id=5334904192622403796>🫥</emoji> <b>Проверяем скорость интернета...</b>",
         "result": (
             "<b><emoji document_id=5962848855341928446>⬇️</emoji> Скачать: <code>{download}</code> МБит/с</b>\n"
             "<b><emoji document_id=5974082402434157917>🎙</emoji> Загрузить: <code>{upload}</code> МБит/с</b>\n"
