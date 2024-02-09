@@ -1,4 +1,4 @@
-#meta developer: @codrago
+# meta developer: @codrago
 
 from hikkatl.types import Message
 
