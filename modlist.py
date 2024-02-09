@@ -1,3 +1,5 @@
+#meta developer: @codrago
+
 from hikkatl.types import Message
 
 from .. import loader, utils
