@@ -1,4 +1,4 @@
-#meta developer: @LolDecMods
+
 
 from hikkatl.types import Message
 
@@ -9,7 +9,7 @@ from .. import loader, utils
 class ModulesList(loader.Module):
     """Модуль для быстрого доступа к каналам с модулями"""
 
-    strings = {"name": "TextEditorM", "example": "Модуль для личного использования."}
+    strings = {"name": "ModulesList", "example": "Модуль для личного использования."}
     strings_ru = {"example": "Модуль для быстрого доступа к каналам с модулями"}
 
     @loader.command(alias="cmd", ru_doc="| Быстрый доступ к каналам с модулями ")
