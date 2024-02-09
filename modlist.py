@@ -1,5 +1,3 @@
-
-
 from hikkatl.types import Message
 
 from .. import loader, utils
@@ -15,5 +13,5 @@ class ModulesList(loader.Module):
     @loader.command(alias="cmd", ru_doc="| Быстрый доступ к каналам с модулями ")
     async def modlist(self, m: Message):
         """quick access to channels with modules"""
-        custom_text = "🌘 Community-made modules\n💭 @hikarimods\n 🦋 @morisummermods\n💚 @nalinormods\n🤩 @AstroModules\n🌚 @vsecoder_m\n☺️ @mm_mods\n😈 @apodiktum_modules\n😇 @wilsonmods\n👑 @DorotoroMods\n✌️ @HikkaFTGmods\n🎈 @nercymods\n🎄 @hikka_mods\n☀️ @sqlmerr_m"
+        custom_text = "🌘 Community-made modules\n💭 @hikarimods\n🦋 @morisummermods\n💚 @nalinormods\n🤩 @AstroModules\n🌚 @vsecoder_m\n☺️ @mm_mods\n😈 @apodiktum_modules\n😇 @wilsonmods\n👑 @DorotoroMods\n✌️ @HikkaFTGmods\n🎈 @nercymods\n🎄 @hikka_mods\n☀️ @sqlmerr_m"
         await m.edit(custom_text)
