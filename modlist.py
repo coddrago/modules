@@ -10,7 +10,7 @@ import datetime
 
 @loader.tds
 class ModulesList(loader.Module):
-    """Модуль для быстрого доступа к каналам с модулями\nДля начала работы, поставьте текст через .setmodlist"""
+    """Модуль для быстрого доступа к каналам с модулями\nДля начала работы, поставьте <a href="https://t.me/codragochannel/1857">этот текст</a> с помощью команды .setmodlist"""
 
     strings = {
         "name": "ModulesList",
