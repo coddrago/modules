@@ -1,4 +1,4 @@
-# meta developer: @codrago
+# meta developer: @codragochannel
 
 from telethon.types import Message
 
