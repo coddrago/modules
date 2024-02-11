@@ -1,4 +1,4 @@
-# meta developer: @codragochannel
+# meta developer: @codrago
 
 from telethon.types import Message
 
@@ -10,10 +10,10 @@ import datetime
 
 @loader.tds
 class ModulesList(loader.Module):
-    """Модуль для быстрого доступа к каналам с модулями\nДля начала работы, поставьте <a href="https://t.me/codragochannel/1857">этот текст</a> с помощью команды .setmodlist"""
+    """Модуль для быстрого доступа к каналам с модулями"""
 
     strings = {
-        "name": "ModulesList",
+        "name": "ModList",
         "setted": "Текст успешно поставлен",
         "added": "Чат <code>{}</code> добавлен",
         "channels": (
@@ -86,10 +86,11 @@ class ModulesList(loader.Module):
         self.set("text", reply.text)
         self._text = self.get("text", self.strings["channels"])
 
-    @loader.command(alias="addmchat", rudoc=" | Добавить чат")
+    @loader.command(alias="addmchat", rudoc="[BOT API ID] | Добавить чат")
     async def addchat(self, message: Message):
+        """[BOT API ID] | add chat"""
         if message.chat_id not in self.config["ids"]:
             self.config["ids"].append(message.chat_id)
             await utils.answer(message, self.strings["added"].format(message.chat_id))
         else:
-            await utils.answer(message, "чат есть уже иди нахуй пидор")
+            await utils.answer(message, "Чат уже был добавлен.")
