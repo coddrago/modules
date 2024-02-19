@@ -226,7 +226,7 @@ class AstroAfkMod(loader.Module):
 				bio = self._afk_about_text()
 				await message.client(UpdateProfileRequest(about=bio))
 
-		m = await utils.answer(message, '<emoji document_id=5188391205909569136>✅</emoji> <b>АФК</b> режим был успешно <b>включен</b>!')
+		m = await utils.answer(message, '<emoji document_id=5188391205909569136>✅</emoji> <b>АФК</b> был успешно <b>включен</b>!')
 		await asyncio.sleep(5)
 		await m.delete()
 		
@@ -301,7 +301,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<b><emoji document_id=5372923973271034075>😴</emoji> Сейчас я в АФК режиме</b>\n\n<emoji document_id=5841359499146825803>⌨️</emoji> Был <b>онлайн</b>: <code>{time}</code> назад.\n<emoji document_id=4974551780743447211>🛑</emoji> Ушел по <b>причине:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}", 
 								reply_markup=[
 									{
 										'text': '🚫 Закрыть', 
@@ -329,7 +329,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<b><emoji document_id=5372923973271034075>😴</emoji> Сейчас я в АФК режиме</b>\n<emoji document_id=5841359499146825803>⌨️</emoji> Был <b>онлайн</b>: <code>{time}</code> назад.\n<emoji document_id=4974551780743447211>🛑</emoji> Ушел по <b>причине:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}", 
 								reply_markup=[
 									[
 										{
@@ -374,7 +374,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<b><emoji document_id=5372923973271034075>😴</emoji> Сейчас я в АФК режиме</b>\n<emoji document_id=5841359499146825803>⌨️</emoji> Был <b>онлайн</b>: <code>{time}</code> назад.\n<emoji document_id=4974551780743447211>🛑</emoji> Ушел по <b>причине:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}, 
 								reply_markup=[
 									[
 										{
@@ -418,7 +418,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<b><emoji document_id=5372923973271034075>😴</emoji> Сейчас я в АФК режиме</b>\n<emoji document_id=5841359499146825803>⌨️</emoji> Был <b>онлайн</b>: <code>{time}</code> назад.\n<emoji document_id=4974551780743447211>🛑</emoji> Ушел по <b>причине:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}", 
 								reply_markup=[
 									[
 										{
