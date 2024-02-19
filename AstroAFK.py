@@ -33,7 +33,7 @@ from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.functions.account import UpdateProfileRequest
 
 class AstroAfkMod(loader.Module):
-	'''Полностью настраиваемый модуль для ухода в АФК режим! Обновление TxAFK!'''
+	'''Fully customizable module for going into AFK mode!'''
 
 	async def client_ready(self, client, db):
 		self._db = db
@@ -44,12 +44,12 @@ class AstroAfkMod(loader.Module):
 
 		"lname": "| afk.",
 
-		"bt_off_afk": "🚫 <b>АФК</b> режим <b>отключен</b>!",
+		"bt_off_afk": "<emoji document_id=5465665476971471368>❌</emoji> <b>AFK</b> mode has been successfully <b>turned off</b> !",
 
-		"_cfg_cst_btn": "Ссылка на чат, которая будет находиться под текстом АФК. Чтобы вовсе убрать, напишите None",
-		"feedback_bot__text": "Юзернейм вашего feedback бота. Если нету - не трогайте",
-		"button__text": "Добавить инлайн кнопку отключения АФК режима?",
-		"custom_text__afk_text": "Кастомный текст афк. Используй {time} для вывода последнего времени нахождения в сети и {reason} для указания причины ухода в афк",
+		"_cfg_cst_btn": "Link to the chat, which will be located under the AFK text. To remove it completely, write None",
+		"feedback_bot__text": "Username of your feedback bot. If not, don't touch it",
+		"button__text": "Add an inline button to disable AFK mode?",
+		"custom_text__afk_text": "Custom afk text. Use {time} to display the last time you were online and {reason} to indicate the reason for leaving AFK",
 	}
 
 	def render_settings(self):
@@ -166,18 +166,18 @@ class AstroAfkMod(loader.Module):
 
 	@loader.command()
 	async def asst(self, message):
-		"""- открыть настройки модуля"""
+		"""- open module settings """
 
 		await self.inline.form(
 			message=message, 
-			text='<b>⚙️ Открыть настройки</b>', 
-			reply_markup=[{'text': '🔴 Открыть', 'callback': self.settings}],
+			text='<b>⚙️ Open settings</b>', 
+			reply_markup=[{'text': '🔴 Open', 'callback': self.settings}],
 			silent=True
 		)
 
 	@loader.command()
 	async def goafk(self, message):
-		""" <reason/empty>- войти в АФК режим"""
+		""" <reason/empty> - enter AFK mode"""
 
 		reason = utils.get_args_raw(message)
 		if '-n' in reason:
@@ -226,14 +226,14 @@ class AstroAfkMod(loader.Module):
 				bio = self._afk_about_text()
 				await message.client(UpdateProfileRequest(about=bio))
 
-		m = await utils.answer(message, '<emoji document_id=5188391205909569136>✅</emoji> <b>АФК</b> был успешно <b>включен</b>!')
+		m = await utils.answer(message, '<emoji document_id=5188391205909569136>✅</emoji> <b>AFK</b> was successfully <b>enabled</b> !')
 		await asyncio.sleep(5)
 		await m.delete()
 		
 
 	@loader.command()
 	async def ungoafk(self, message):
-		"""- выйти из режима АФК"""
+		"""- leave AFK mode"""
 
 		self._db.set(__name__, "afk", False)
 		self._db.set(__name__, "gone", None)
@@ -252,7 +252,7 @@ class AstroAfkMod(loader.Module):
 				await message.client(UpdateProfileRequest(about=f'{self.db.get(__name__, "about")}'))
 			except:
 				await message.client(UpdateProfileRequest(about="@AstroOfftop - лучший чат для общения."))
-		m = await utils.answer(message, '<emoji document_id=5465665476971471368>❌</emoji> <b>АФК</b> режим был успешно <b>выключен</b>!')
+		m = await utils.answer(message, '<emoji document_id=5465665476971471368>❌</emoji> <b>AFK</b> mode has been successfully <b>turned off</b> !')
 		await self.allmodules.log("AstroAfk now stoped.")
 		await asyncio.sleep(5)
 		await m.delete()
@@ -301,10 +301,10 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in AFK mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was online: {time} ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for the reason: {reason}", 
 								reply_markup=[
 									{
-										'text': '🚫 Закрыть', 
+										'text': '🚫 Close', 
 										'callback': self.callback_handler_ok,
 										"args": (message.chat.id,)
 									}
@@ -317,7 +317,7 @@ class AstroAfkMod(loader.Module):
 								text=self._afk_custom_text(), 
 								reply_markup=[
 									{
-										'text': '🚫 Закрыть', 
+										'text': '🚫 Close', 
 										'callback': self.callback_handler_ok,
 										"args": (message.chat.id, )
 									}
@@ -329,7 +329,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in AFK mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was online: {time} ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for the reason: {reason}", 
 								reply_markup=[
 									[
 										{
@@ -339,7 +339,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 	            						{
-	                      					'text': '🚫 Закрыть', 
+	                      					'text': '🚫 Close', 
 											'callback': self.callback_handler_ok,
 											"args": (message.chat.id,)
 	          							}
@@ -361,7 +361,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 	            						{
-	                      					'text': '🚫 Закрыть', 
+	                      					'text': '🚫 Close', 
 											'callback': self.callback_handler_ok,
 											"args": (message.chat.id,)
 	          							}
@@ -374,7 +374,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}, 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in AFK mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was online: {time} ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for the reason: {reason}",
 								reply_markup=[
 									[
 										{
@@ -384,7 +384,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 	            						{
-	                      					'text': '🚫 Закрыть', 
+	                      					'text': '🚫 Close', 
 											'callback': self.callback_handler_ok,
 											"args": (message.chat.id, )
 	          							}
@@ -405,7 +405,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 	            						{
-	                      					'text': '🚫 Закрыть', 
+	                      					'text': '🚫 Close', 
 											'callback': self.callback_handler_ok,
 											"args": (message.chat.id,)
 	          							}
@@ -418,7 +418,7 @@ class AstroAfkMod(loader.Module):
 						if self.config["afk_text"] == None:
 							await self.inline.form(
 								message=message, 
-								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for <b>the reason:</b> {reason}", 
+								text=f"<emoji document_id=5372923973271034075>😴</emoji> I'm in AFK mode now\n<emoji document_id=5841359499146825803>⌨️</emoji> Was online: {time} ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Left for the reason: {reason}", 
 								reply_markup=[
 									[
 										{
@@ -434,7 +434,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 	            						{
-	                      					'text': '🚫 Закрыть', 
+	                      					'text': '🚫 Close', 
 											'callback': self.callback_handler_ok,
 											"args": (message.chat.id,)
 	          							}
@@ -462,7 +462,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 	            						{
-	                      					'text': '🚫 Закрыть', 
+	                      					'text': '🚫 Close', 
 											'callback': self.callback_handler_ok,
 											"args": (message.chat.id,)
 	          							}
@@ -475,9 +475,9 @@ class AstroAfkMod(loader.Module):
 					await utils.answer(
 						message,
 						(
-							"<emoji document_id=5372923973271034075>😴</emoji> Сейчас я в <b>АФК</b> режиме\n"
-							f"<emoji document_id=5841359499146825803>⌨️</emoji> Был <b>онлайн</b>: <code>{time}"
-							"</code> назад.\n<emoji document_id=4974551780743447211>🛑</emoji> Ушел по <b>причине:"
+							"<emoji document_id=5372923973271034075>😴</emoji> I'm in <b>AFK</b> mode now\n"
+							f"<emoji document_id=5841359499146825803>⌨️</emoji> Was <b>online</b>: <code>{time}"
+							"</code> ago.\n<emoji document_id=4974551780743447211>🛑</emoji> Leave for <b>reason:"
 							f"</b> {reason}"
 						)
 					)
@@ -528,7 +528,7 @@ class AstroAfkMod(loader.Module):
 				],
 				[
 					{
-						"text": "🚫 Закрыть",
+						"text": "🚫 Close",
 						"action": 'close'
 					}
 				]
@@ -580,7 +580,7 @@ class AstroAfkMod(loader.Module):
 				],
 				[
 					{
-						"text": "🚫 Закрыть",
+						"text": "🚫 Close",
 						"action": 'close'
 					}
 				]
@@ -606,7 +606,7 @@ class AstroAfkMod(loader.Module):
 				],
 				[
 					{
-						"text": "🚫 Закрыть",
+						"text": "🚫 Close",
 						"action": 'close'
 					}
 				]
