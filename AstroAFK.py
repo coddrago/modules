@@ -96,7 +96,8 @@ class AstroAfkMod(loader.Module):
 			loader.ConfigValue(
 				'about_text',
 				None,
-				doc=lambda: ''Text that will be displayed in the bio when entering the AFK. Use {bot} to indicate the bots feedback and {reason} for the reason.''
+				doc=lambda: 'Text that will be displayed in the bio when entering the AFK. Use {bot} to indicate the bots feedback and {reason} for the reason.'
+
 			),
 			loader.ConfigValue(
 				"afk_text",
@@ -627,7 +628,7 @@ class AstroAfkMod(loader.Module):
 			text = (
 				f'📖 <b>Change Biography</b>'
 				+ '\n\n❔ <b>Do you want</b> that when you <b>enter AFK</b> mode '
-				+ 'Your biography <b>changed</b> to "<code>No, I'm in AFK</code><code>."
+				+ 'Your biography <b>changed</b> to "<code>No, I am in AFK</code><code>."'
     + f' Communication only via @{self.config["feedback"]}</code>"?\n🤖 <b>Communication bot</b>: <code>@{self.config["feedback"] }</code>\n\n'
     + 'ℹ️ You can also <b>change your biography</b> in <b>config</b>. '
     + 'You can <b>cancel</b> or <b>do</b> an action by clicking on the <b>buttons below</b>'
