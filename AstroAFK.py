@@ -74,9 +74,9 @@ class AstroAfkMod(loader.Module):
 		text = (
 			f'🎆 <b>AstroAfk</b>\n'
 			f'<b>├{a_active}</b>\n'
-			f'<b>├Смена биографии:</b> <code>{a_change_bio}</code> 📖\n'
-			f'<b>├Смена префикса:</b> <code>{a_change_name}</code> 📝\n'
-			f'<b>└Бот для связи:</b> <code>@{fb}</code> 🤖'
+			f'<b>├Change bio:</b> <code>{a_change_bio}</code> 📖\n'
+			f'<b>├Change prefix:</b> <code>{a_change_name}</code> 📝\n'
+			f'<b>└Feedback bot:</b> <code>@{fb}</code> 🤖'
 		)
 		return text
 
@@ -86,7 +86,7 @@ class AstroAfkMod(loader.Module):
 			loader.ConfigValue(
 				"prefix",
 				'| afk.',
-				doc=lambda: 'Префикс, который будет добавляться к вашему имени во время входа в АФК'
+				doc=lambda: 'The prefix that will be added to your name when logging into AFK'
 			),
 			loader.ConfigValue(
 				"feedback",
@@ -96,7 +96,7 @@ class AstroAfkMod(loader.Module):
 			loader.ConfigValue(
 				'about_text',
 				None,
-				doc=lambda: 'Текст, который будет выставляться в био при входе в АФК. Используйте {bot} для указания фидбэк бота и {reason} для причины.'
+				doc=lambda: ''Text that will be displayed in the bio when entering the AFK. Use {bot} to indicate the bots feedback and {reason} for the reason.''
 			),
 			loader.ConfigValue(
 				"afk_text",
@@ -115,7 +115,7 @@ class AstroAfkMod(loader.Module):
 			loader.ConfigValue(
 				"ignore_chats",
 				[],
-				lambda: "Чаты, в которых AstroAfk не будет срабатывать",
+				lambda: "Chats in which AstroAfk will not work",
 				validator=loader.validators.Series(
                     validator=loader.validators.Union(
                         loader.validators.TelegramID(),
@@ -333,7 +333,7 @@ class AstroAfkMod(loader.Module):
 								reply_markup=[
 									[
 										{
-											"text": "🥱 Выйти из АФК", 
+											"text": "🥱 Leave AFK", 
 											"callback": self.button_cancel,
 										}
 									],
@@ -355,7 +355,7 @@ class AstroAfkMod(loader.Module):
 								reply_markup=[
 									[
 										{
-											"text": "🥱 Выйти из АФК", 
+											"text": "🥱 Leave AFK", 
 											"callback": self.button_cancel,
 										}
 									],
@@ -428,7 +428,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 										{
-											"text": "🥱 Выйти из АФК", 
+											"text": "🥱 Leave AFK", 
 											"callback": self.button_cancel,
 										}
 									],
@@ -456,7 +456,7 @@ class AstroAfkMod(loader.Module):
 									],
 									[
 										{
-											"text": "🥱 Выйти из АФК", 
+											"text": "🥱 Leave AFK", 
 											"callback": self.button_cancel,
 										}
 									],
@@ -549,15 +549,15 @@ class AstroAfkMod(loader.Module):
 			reply_markup=[
 				[
 					{
-						'text': '✅ Да',
+						'text': '✅ Yes',
 						"callback": self.name_yes
 					},
 					{
-						"text": '🚫 Нет',
+						"text": '🚫 No',
 						"callback": self.name_no
 					}
 				],
-				[{'text': '↩️ Назад', 'callback': self.settings}]
+				[{'text': '↩️ Back', 'callback': self.settings}]
 			]
 		)
 	async def name_yes(self, call: InlineCall):
@@ -570,11 +570,11 @@ class AstroAfkMod(loader.Module):
 			reply_markup=[
 				[
 					{
-						'text': "📖 Биография",
+						'text': "📖 Biography",
 						'callback': self.settings_about
 					},
 					{
-						'text': '📝 Префикс',
+						'text': '📝 Prefix',
 						'callback': self.settings_name
 					}
 				],
@@ -596,11 +596,11 @@ class AstroAfkMod(loader.Module):
 			reply_markup=[
 				[
 					{
-						'text': "📖 Биография",
+						'text': "📖 Biography",
 						'callback': self.settings_about
 					},
 					{
-						'text': '📝 Префикс',
+						'text': '📝 Prefix',
 						'callback': self.settings_name
 					}
 				],
@@ -617,35 +617,35 @@ class AstroAfkMod(loader.Module):
 		
 		if self.config['feedback'] == None:
 			text = (
-				f'📖 <b>Смена биографии</b>'
-				+ '\n\n❔ <b>Хотите</b> ли Вы, чтобы при <b>входе в АФК</b> режим Ваша биография <b>менялась</b>'
-				+ '  на "<code>Нахожусь в афк</code>"?\n\n'
-				+ 'ℹ️ Так же Вы можете <b>изменить биографию</b> в <b>конфиге</b>. '
-				+ 'Можно <b>отменить</b> или <b>сделать</b> действие, нажав на <b>кнопки ниже</b>'
+				f'📖 <b>Change Biography</b>'
+				+ '\n\n❔ <b>Do you want</b> your biography to <b>change</b> when you <b>enter AFK</b> mode?'
+				+ '  to "<code>I am in afk</code>"?\n\n'
+				+ 'ℹ️ You can also <b>change your biography</b> in the <b>config</b>. '
+				+ 'You can <b>cancel</b> or <b>do</b> the action by clicking on the <b>buttons below</b>'
 			)
 		else:
 			text = (
-				f'📖 <b>Смена биографии</b>'
-				+ '\n\n❔ <b>Хотите</b> ли Вы, чтобы при <b>входе в АФК</b> режим '
-				+ 'Ваша биография <b>менялась</b> на  "<code>Нет, на месте нахожусь в афк</code><code>.'
-				+ f' Связь только через @{self.config["feedback"]}</code>"?\n🤖 <b>Бот для связи</b>: <code>@{self.config["feedback"]}</code>\n\n'
-				+ 'ℹ️ Так же Вы можете <b>изменить биографию</b> в <b>конфиге</b>. '
-				+ 'Можно <b>отменить</b> или <b>сделать</b> действие, нажав на <b>кнопки ниже</b>'
+				f'📖 <b>Change Biography</b>'
+				+ '\n\n❔ <b>Do you want</b> that when you <b>enter AFK</b> mode '
+				+ 'Your biography <b>changed</b> to "<code>No, I'm in AFK</code><code>."
+    + f' Communication only via @{self.config["feedback"]}</code>"?\n🤖 <b>Communication bot</b>: <code>@{self.config["feedback"] }</code>\n\n'
+    + 'ℹ️ You can also <b>change your biography</b> in <b>config</b>. '
+    + 'You can <b>cancel</b> or <b>do</b> an action by clicking on the <b>buttons below</b>'
 			)
 		await call.edit(
 			text=text,
 			reply_markup=[
 				[
 					{
-						'text': '✅ Да',
+						'text': '✅ Yes',
 						"callback": self.bio
 					},
 					{
-						"text": '🚫 Нет',
+						"text": '🚫 No',
 						"callback": self.bio_n
 					}
 				],
-				[{'text': '↩️ Назад', 'callback': self.settings}]
+				[{'text': '↩️ Back', 'callback': self.settings}]
 			]
 		)
 	async def bio(self, call: InlineCall):
@@ -658,17 +658,17 @@ class AstroAfkMod(loader.Module):
 			reply_markup=[
 				[
 					{
-						'text': "📖 Биография",
+						'text': "📖 Biography",
 						'callback': self.settings_about
 					},
 					{
-						'text': '📝 Префикс',
+						'text': '📝 Prefix',
 						'callback': self.settings_name
 					}
 				],
 				[
 					{
-						"text": "🚫 Закрыть",
+						"text": "🚫 Close",
 						"action": 'close'
 					}
 				]
@@ -684,17 +684,17 @@ class AstroAfkMod(loader.Module):
 			reply_markup=[
 				[
 					{
-						'text': "📖 Биография",
+						'text': "📖 Biography",
 						'callback': self.settings_about
 					},
 					{
-						'text': '📝 Префикс',
+						'text': '📝 Prefix',
 						'callback': self.settings_name
 					}
 				],
 				[
 					{
-						"text": "🚫 Закрыть",
+						"text": "🚫 Close",
 						"action": 'close'
 					}
 				]
