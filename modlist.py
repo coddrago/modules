@@ -92,10 +92,10 @@ class ModulesList(loader.Module):
 
     @loader.command(alias="mlist", ru_doc=" | Быстрый доступ к каналам с модулями ")
     async def modlist(self, message: Message):
-        """| Quick access to channels with modules"""
+        """ | Quick access to channels with modules"""
         await utils.answer(message, self._text)
 
-    @loader.command(alias="offmlist", ru_doc" | Оффициальные каналы с модулями ")
+    @loader.command(alias="offmlist", ru_doc=" | Оффициальные каналы с модулями ")
     async def offmodlist(self, message: Message): 
         """ | Official channel with modules"""
         await utils.answer(message, self._offtext)
