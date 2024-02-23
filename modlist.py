@@ -57,7 +57,7 @@ class ModulesList(loader.Module):
     async def client_ready(self, client, db):
         self.db = db
         self._text = self.get("text", self.strings["channels"])
-        self._offtext = self.get("text", self.strings["OfficialChannels"])
+        self._offtext = self.get("offtext", self.strings["OfficialChannels"])
         self._floodwait: dict = self.get("floodwait", {})
 
     def __init__(self):
