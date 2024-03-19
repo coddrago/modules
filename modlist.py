@@ -1,5 +1,4 @@
 # meta developer: @codrago
-# meta editor: @n3rcy
 
 from telethon.types import Message
 
