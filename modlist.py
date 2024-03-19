@@ -58,7 +58,7 @@ class ModulesList(loader.Module):
     async def client_ready(self, client, db):
         self.db = db
         self._text = self.get("text", self.strings["channels"])
-        self._offtext = self.get("offtext", self.strings["OfficialChannels"])
+        self._offtext = self.get("offtext", self.strings["officialChannels"])
         self._floodwait: dict = self.get("floodwait", {})
 
     def __init__(self):
@@ -99,7 +99,7 @@ class ModulesList(loader.Module):
     @loader.command(alias="offmlist", ru_doc=" | Оффициальные каналы с модулями ")
     async def offmodlist(self, message: Message): 
         """ | Official channel with modules"""
-        await utils.answer(message, self.strings["OfficialChannels"])
+        await utils.answer(message, self.strings["officialChannels"])
 
     @loader.command(alias="setmlist", ru_doc=" [Текст] | Поставить текст")
     async def setmodlist(self, message):
