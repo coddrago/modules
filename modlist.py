@@ -1,4 +1,5 @@
 # meta developer: @codrago
+# meta redactor: @n3rcy
 
 from telethon.types import Message
 
@@ -98,7 +99,7 @@ class ModulesList(loader.Module):
     @loader.command(alias="offmlist", ru_doc=" | Оффициальные каналы с модулями ")
     async def offmodlist(self, message: Message): 
         """ | Official channel with modules"""
-        await utils.answer(message, self._offtext)
+        await utils.answer(message, self.strings["OfficialChannels"])
 
     @loader.command(alias="setmlist", ru_doc=" [Текст] | Поставить текст")
     async def setmodlist(self, message):
