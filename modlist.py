@@ -1,5 +1,5 @@
 # meta developer: @codrago
-# meta redactor: @n3rcy
+# meta editor: @n3rcy
 
 from telethon.types import Message
 
