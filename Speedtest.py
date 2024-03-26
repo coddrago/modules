@@ -21,7 +21,6 @@ from typing import Tuple
 
 from telethon import TelegramClient
 from telethon.tl.custom import Message
-from telethon.tl.functions.channels import JoinChannelRequest
 
 import speedtest  # pylint: disable=import-self
 
@@ -54,11 +53,7 @@ class SpeedtestMod(loader.Module):
             "<b><emoji document_id=5974082402434157917>🎙</emoji> Загрузить: <code>{upload}</code> МБит/с</b>\n"
             "<b><emoji document_id=5974475701179387553>😀</emoji> Пинг: <code>{ping}</code> мс</b>"
         ),
-    }
-
-    async def client_ready(self, client: TelegramClient, _):
-        """client_ready hook"""
-        await client(JoinChannelRequest(channel=self.strings("author")))
+   },
 
     async def speedtestcmd(self, message: Message):
         """Run speedtest"""
