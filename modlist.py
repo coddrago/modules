@@ -99,22 +99,6 @@ class ModulesList(loader.Module):
         """ | Official channel with modules"""
         await utils.answer(message, self.strings["officialChannels"])
 
-    @loader.command(alias="setoffmlist", ru_doc=" [Текст] | Поставить текст")
-    async def setoffmodlist(self, message):
-        """[Text] | Set text"""
-        reply = await message.get_reply_message()
-        await utils.answer(message, self.strings["setted"])
-        self.set("text", reply.text)
-        self._text = self.get("text", self.strings["officialChannels"])
-
-    @loader.command(alias="setmlist", ru_doc=" [Текст] | Поставить текст")
-    async def setmodlist(self, message):
-        """[Text] | Set text"""
-        reply = await message.get_reply_message()
-        await utils.answer(message, self.strings["setted"])
-        self.set("text", reply.text)
-        self._text = self.get("text", self.strings["channels"])
-
     @loader.command(alias="addmchat", rudoc="[BOT API ID] | Добавить чат")
     async def addchat(self, message: Message):
         """[BOT API ID] | add chat"""
