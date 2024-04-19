@@ -16,6 +16,17 @@
 
 # meta developer: @nalinormods
 # requires: speedtest-cli
+# ---------------------------------------------------------------------------------
+# Name: Speedtest
+# Description: Checking your speed of internet.
+# Author: @nalinormods
+# ---------------------------------------------------------------------------------
+
+# 🔒    Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+
+# meta editor: @codrago
+# ---------------------------------------------------------------------------------
 
 from typing import Tuple
 
