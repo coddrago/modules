@@ -44,6 +44,7 @@ class ModulesList(loader.Module):
             "\n<emoji document_id=5298799263013151249>😐</emoji> @sqlmerr_m"
             "\n<emoji document_id=5296274178725396201>🥰</emoji> @AuroraModules"
             "\n<emoji document_id=5429400349377051725>😄</emoji> @BHikkaMods"
+            "\n<emoji document_id=5436024756610546212>⚡</emoji> @DieModules"
         ),
         "officialChannels": (
             "<emoji document_id=5188377234380954537>🌘</emoji> Community-made modules\n"
