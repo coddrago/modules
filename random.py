@@ -8,7 +8,7 @@ class DiceMod(loader.Module):
     strings = {"name": "Dice"}
     async def dicecmd(self, message):
         """Загадать рандомное число от 1 до 6"""
-        num = random.randint("number A", "number B")
+        num = random.randint(1, 6)
         args = utils.get_args_raw(message)
         if not args:
             await utils.answer(message, "Где аргументы?")
