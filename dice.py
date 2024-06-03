@@ -7,7 +7,7 @@
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta developer: @codrago
+# meta developer: @codrago_m
 # ---------------------------------------------------------------------------------
 
 from .. import loader, utils
