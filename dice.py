@@ -1,4 +1,14 @@
+# ---------------------------------------------------------------------------------
+# Name: ModulesList.
+# Description: Channels of modules for userbot Hikka.
+# Author: @codrago
+# ---------------------------------------------------------------------------------
+
+# 🔒    Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+
 # meta developer: @codrago
+# ---------------------------------------------------------------------------------
 
 from .. import loader, utils
 import requests, random
