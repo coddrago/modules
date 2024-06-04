@@ -45,6 +45,7 @@ class DiceMod(loader.Module):
             return
         if min_max >= max_num:
             await utils.answer(message, "Ебанутый, не ломай мне модуль! Сделай минимальное число меньше максимального." 
+            return
         if num == int(args):
             await utils.answer(message, f"Поздравляю! Вы угадали число!\nЧислом было: {num}")
             return
