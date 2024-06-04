@@ -16,16 +16,40 @@ import requests, random
 class DiceMod(loader.Module):
     """Развлекательный модуль"""
     strings = {"name": "Dice"}
+
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "min_num",
+                1,
+                lambda: "минимальное число для рандома",
+                validator=loader.validators.Integer(minimum=0),
+            ),
+        
+            loader.ConfigValue(
+                "max_num",
+                6,
+                lambda: "Максимальное число для рандома",
+                validator=loader.validators.Integer(minimum=1)
+            ),
+        )
+
     async def dicecmd(self, message):
-        """Загадать рандомное число от 1 до 6"""
-        num = random.randint(1, 6)
+        """Угадывайте рандомные числа!"""
+        min_num = min(self.config["min_num"], self.config["max_num"])
+        max_num = max(self.config["min_num"], self.config["max_num"])
+        num = random.randint(min_num, max_num)
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answer(message, "Где аргументы?")
+            await utils.answer(message, f"Где аргументы?\nВведите число в радуисе {min_num} - {max_num}")
             return
+        if min_max >= max_num:
+            await utils.answer(message, "Ебанутый, не ломай мне модуль! Сделай минимальное число меньше максимального." 
         if num == int(args):
             await utils.answer(message, f"Поздравляю! Вы угадали число!\nЧислом было: {num}")
             return
         else:
             await utils.answer(message, f"Вы не угадали число!\nЧислом было: {num}")
             return
+        
+
