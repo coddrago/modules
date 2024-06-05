@@ -13,9 +13,9 @@
 from .. import loader, utils
 import requests, random
 
-class DiceMod(loader.Module):
+class RandomNumbersMod(loader.Module):
     """Развлекательный модуль"""
-    strings = {"name": "Dice"}
+    strings = {"name": "RandomNumbers"}
 
     def __init__(self):
         self.config = loader.ModuleConfig(
@@ -34,7 +34,7 @@ class DiceMod(loader.Module):
             ),
         )
 
-    async def dicecmd(self, message):
+    async def rnumcmd(self, message):
         """Угадывайте рандомные числа!"""
         min_num = min(self.config["min_num"], self.config["max_num"])
         max_num = max(self.config["min_num"], self.config["max_num"])
