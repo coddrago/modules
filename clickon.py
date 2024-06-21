@@ -1,8 +1,8 @@
 
 # ---------------------------------------------------------------------------------
-# Name: ModulesList.
-# Description: Channels of modules for userbot Hikka.
-# Author: @codrago
+# Name: ButtonAutoClicker.
+# Description: Click on button!
+# Author: @codrago_m, @ytkanelox
 # ---------------------------------------------------------------------------------
 
 # 🔒    Licensed under the GNU AGPLv3
