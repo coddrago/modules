@@ -54,7 +54,7 @@ class WhoYouMod(loader.Module):
         """Answer the question asked in the config!"""
         answer = self.config["Answer"]
         args = utils.get_args_raw(message)
-        if args == None:
+        if not args:
             await utils.answer(message, "Where arguments?")
         if args == answer:
             await utils.answer(message, self.config["Answer_a"])
