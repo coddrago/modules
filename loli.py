@@ -31,7 +31,7 @@ class lolihentai(loader.Module):
     }
     
     async def lolicmd(self, message):
-        """random loli photo"""
+        """-> random loli photo"""
 
         await utils.answer(message, self.strings("loading_photo"))
         
