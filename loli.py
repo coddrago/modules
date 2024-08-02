@@ -43,9 +43,9 @@ class lolihentai(loader.Module):
           
             if otvet.photo:
                 phota = await self._client.download_media(otvet.photo, "loli_hentai")
-            if m.chat.forum == True:
+            if message.chat.forum == True:
                 await message.client.send_message(
-                    m.chat.id,
+                    message.chat.id,
                     file=phota,
                     reply_to=r.id,
                     )
@@ -78,6 +78,6 @@ class lolihentai(loader.Module):
          )
          await message.delete()
          if message.chat.forum == True:
-             await message.client.send_file(m.chat.id,result.messagds[0].media, reply_to=r.id)
+             await message.client.send_file(message.chat.id,result.messages[0].media, reply_to=r.id)
          else:
              await message.client.send_file(message.to_id, result.messages[0].media)
