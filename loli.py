@@ -47,7 +47,7 @@ class lolihentai(loader.Module):
                 await message.client.send_message(
                     message.chat.id,
                     file=phota,
-                    reply_to=r.id,
+                    reply_to=reply.id,
                     )
             else:
                 await message.client.send_message(
@@ -78,6 +78,6 @@ class lolihentai(loader.Module):
          )
          await message.delete()
          if message.chat.forum == True:
-             await message.client.send_file(message.chat.id,result.messages[0].media, reply_to=r.id)
+             await message.client.send_file(message.chat.id,result.messages[0].media, reply_to=reply.id)
          else:
              await message.client.send_file(message.to_id, result.messages[0].media)
