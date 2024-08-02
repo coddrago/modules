@@ -56,7 +56,7 @@ class lolihentai(loader.Module):
     async def loliccmd(self, message: Message):
          """-> to get your loli"""
          await message.edit(self.strings("search"))
-         time.sleep(1)
+         time.sleep(0.5)
          chat = "hdjrkdjrkdkd"
          result = await message.client(
              functions.messages.GetHistoryRequest(
@@ -71,4 +71,7 @@ class lolihentai(loader.Module):
              ),
          )
          await message.delete()
-         await message.client.send_file(message.to_id, result.messages[0].media)
+         if message.chat.forum == True:
+    await message.client.send_file(m.chat.id,result.messagds[0].media, reply_to=r.id)
+         else:
+             await message.client.send_file(message.to_id, result.messages[0].media)
