@@ -3,12 +3,16 @@
 # Description: words superfluous?
 # Author: @codrago_m
 # ---------------------------------------------------------------------------------
-
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
-
+# ---------------------------------------------------------------------------------
+# Author: @codrago
+# Commands: loli, lolic
+# scope: hikka_only
 # meta developer: @codrago_m
 # ---------------------------------------------------------------------------------
+
+__version__ = (1, 5, 3)
 import os
 import logging
 from .. import loader, utils
@@ -43,16 +47,10 @@ class lolihentai(loader.Module):
           
             if otvet.photo:
                 phota = await self._client.download_media(otvet.photo, "loli_hentai")
-            if message.chat.forum == True:
-                await message.client.send_message(
-                    message.chat.id,
-                    file=phota,
-                    reply_to=reply.id,
-                    )
-            else:
                 await message.client.send_message(
                     message.peer_id,
                     file=phota,
+                    reply_to=getattr(message, "reply_to_msg_id", None),
                     )
 
                 os.remove(phota)
@@ -77,7 +75,8 @@ class lolihentai(loader.Module):
              ),
          )
          await message.delete()
-         if message.chat.forum == True:
-             await message.client.send_file(message.chat.id,result.messages[0].media, reply_to=reply.id)
-         else:
-             await message.client.send_file(message.to_id, result.messages[0].media)
+         await message.client.send_file(
+             message.to_id, 
+             result.messages[0].media, 
+             reply_to=getattr(message, "reply_to_msg_id", None),
+             )
