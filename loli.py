@@ -67,7 +67,7 @@ class lolihentai(loader.Module):
                  peer=chat,
                  offset_id=0,
                  offset_date=datetime.datetime.now(),
-                 add_offset=random.choice(range(1, 399, 2)),
+                 add_offset=random.choice(range(1, 799, 2)),
                  limit=1,
                  max_id=0,
                  min_id=0,
