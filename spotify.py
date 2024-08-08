@@ -1036,7 +1036,7 @@ class SpotifyMod(loader.Module):
             + "\n\n<emoji document_id=5325617665874600234>🕔</emoji> <i>Loading audio"
             " file...</i>",
         )
-        await self._open_track(current_playback["item"], message, result)
+        await self._open_track(current_playback["item"], message, result, reply_to=getattr(message, "reply_to_msg_id", None))
 
     async def watcher(self, message: Message):
         """Watcher is used to update token"""
