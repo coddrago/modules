@@ -15,7 +15,7 @@
 # meta developer: @codrago_m
 # ---------------------------------------------------------------------------------
 
-__version__ = (1, 5, 3)
+__version__ = (1, 6, 0)
 import os
 import logging
 from .. import loader, utils
@@ -44,23 +44,20 @@ class lolihentai(loader.Module):
         
         async with self._client.conversation("@ferganteusbot") as conv:
             try: 
-                await conv.send_message("/lh")
+                lh = await conv.send_message("/lh")
+                
                 
             except Exception as e:
                 return await utils.answer(message, self.strings("error_loading"))
         
             otvet = await conv.get_response()
-          
+            await lh.delete()
             if otvet.photo:
-                phota = await self._client.download_media(otvet.photo, "loli_hentai")
                 await message.client.send_message(
                     message.peer_id,
-                    file=phota,
-                    reply_to=getattr(message, "reply_to_msg_id", None),
-                    )
-
-                os.remove(phota)
-                
+                    message=otvet,
+                    reply_to=getattr(message, "reply_to_msg_id", None))
+                await otvet.delete()
                 await message.delete()
                 
     async def loliccmd(self, message: Message):
