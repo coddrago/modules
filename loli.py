@@ -40,8 +40,11 @@ class lolihentai(loader.Module):
         await utils.answer(message, self.strings("loading_photo"))
         
         async with self._client.conversation("@ferganteusbot") as conv:
-            
-            await conv.send_message("/lh")
+            try: 
+                await conv.send_message("/lh")
+                
+            except Exception as e:
+                return await utils.answer(message, self.strings("error_loading"))
         
             otvet = await conv.get_response()
           
