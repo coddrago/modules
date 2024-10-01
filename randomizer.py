@@ -88,7 +88,7 @@ class Randomizer(loader.Module):
         if message.is_private:
             await utils.answer(message, self.strings["Not_chat"])
         else:
-            await utils.answer(message, f'Random ship: {loh_a} + {loh_b}\n\nLove and appreciate each other!')
+            await utils.answer(message, f'<emoji document_id=5341674117642854617>❤️</emoji> Random ship: {loh_a} + {loh_b}\n\n<emoji document_id=5341364514925321015>🌹</emoji> Love and appreciate each other!')
     
     async def randusercmd(self, message):
         """| Random user!"""
