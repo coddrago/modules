@@ -57,7 +57,7 @@ class Randomizer(loader.Module):
         if not args:
             await utils.answer(message, self.strings["not_args"])
         else:
-            await utils.answer(message, f"The chance that {args} is equal to {chance}%!")
+            await utils.answer(message, f"<emoji document_id=5298620403395074835>🤩</emoji> The chance that {args} is equal to {chance}%!")
     
     async def randomcmd(self, message):
         """!cfg | random number"""
@@ -69,7 +69,7 @@ class Randomizer(loader.Module):
         if min_num >= max_num:
             await utils.answer(message, self.strings["Error_Num"])
         else:
-            await utils.answer(message, f"Your random number in the range {min_num} - {max_num}: {random_num}")
+            await utils.answer(message, f"<emoji document_id=5406611523487411073>😇</emoji> Your random number in the range {min_num} - {max_num}: {random_num}")
            
     async def shipcmd(self, message):
         """| Ship from iris?"""
@@ -103,7 +103,7 @@ class Randomizer(loader.Module):
         if message.is_private:
             await utils.answer(message, self.strings["Not_chat"])
         else: 
-            await utils.answer(message, f'Your random user: <a href = "tg://user?id={user}">{user_name}</a>')
+            await utils.answer(message, f'<emoji document_id=5287404392654319394>🔥</emoji> Your random user: <a href = "tg://user?id={user}">{user_name}</a>')
         
        
        
