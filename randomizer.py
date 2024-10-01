@@ -2,8 +2,8 @@
 #░█▀▄░▄▀▀▄░█▀▄░█▀▀▄░█▀▀▄░█▀▀▀░▄▀▀▄░░░█▀▄▀█
 #░█░░░█░░█░█░█░█▄▄▀░█▄▄█░█░▀▄░█░░█░░░█░▀░█
 #░▀▀▀░░▀▀░░▀▀░░▀░▀▀░▀░░▀░▀▀▀▀░░▀▀░░░░▀░░▒▀
-# Name: ID
-# Description: Tool for ID's
+# Name: randomizer
+# Description: Random it your life!
 # Author: @codrago_m
 # ---------------------------------------------------------------------------------
 # 🔒    Licensed under the GNU AGPLv3
@@ -22,10 +22,10 @@ import random
 from telethon.tl.types import InputPeerChannel
 
 @loader.tds
-class Random&Iris(loader.Module):
+class Randomizer(loader.Module):
     """Random - it's life!"""
     strings = {
-    "name": "Random&iris",
+    "name": "Randomizer",
     "not_args": "<emoji document_id=5328145443106873128>✖️</emoji> Your arguments were not stated.",
     "Num1": "Number 1 for RandomCMD",
     "Num2": "Number 2 for RandomCMD",
