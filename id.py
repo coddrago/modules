@@ -31,7 +31,7 @@ class ID(loader.Module):
         """[reply] | Get User ID"""
         reply = await message.get_reply_message()
         if reply != None:
-            await utils.answer(message, f"<emoji document_id=5436024756610546212>⚡</emoji> <b>User ID</b>: <code>{reply.sender_id}</code>")
+            await utils.answer(message, f"<emoji document_id=5436024756610546212>⚡</emoji> <b>User ID</b>: <code>{message.sender_id}</code>")
         else:
             await utils.answer(message, self.strings["Error_reply"])
 
