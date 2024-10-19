@@ -67,7 +67,7 @@ class ModulesList(loader.Module):
             "\n<emoji document_id=5472091323571903308>🎈</emoji> @nercymods"
             "\n<emoji document_id=5436024756610546212>⚡</emoji> @hikka_mods"
             "\n<emoji document_id=5298799263013151249>😐</emoji> @sqlmerr_m"
-            "\n<emoji document_id=5231165412275668380>🥰</emoji>"
+            "\n<emoji document_id=5231165412275668380>🥰</emoji> @AuroraModules"
         ),
     }
 
