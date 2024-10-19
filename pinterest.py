@@ -36,5 +36,7 @@ class PinterestDownloader(loader.Module):
        
         if not args:
             await utils.answer(message, self.strings["Error"])
-        else:
+        elif 'pin.it' in args:
             await utils.answer(message, f'<emoji document_id=5319172556345851345>✨</emoji> <b><u>Pin ready to download!</u></b>\n\n<emoji document_id=5316719099227684154>🌕</emoji> <b>Link for download:</b> <i><a href="{link}">just tap here</a></i>')
+        else:
+            await utils.answer(message, f"<emoji document_id=5319088379281815108>🤷‍♀️</emoji> '{args}' <b>No have</b> 'pin.it' \n\n<b>Link is invalid</b>")
