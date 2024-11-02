@@ -36,6 +36,13 @@ class lolihentai(loader.Module):
         "error_loading": "<b>Failed to get photos. Please unblock @ferganteusbot</b>",
         "search": "<emoji document_id=5328311576736833844>🔴</emoji> loading your photo..."
     }
+
+    strings_ru = {
+    "name": "LoliHentai",
+    "loading_photo": "<emoji document_id=5215327832040811010>⏳</emoji> <b>загрузка вашей лоли фотографии...</b>",
+    "error_loading": "<b>Не удалось получить фотографии. Пожалуйста, разблокируйте @ferganteusbot</b>",
+    "search": "<emoji document_id=5328311576736833844>🔴</emoji> загрузка вашей фотографии..."
+    }
     
     async def lolicmd(self, message):
         """-> random loli photo"""
