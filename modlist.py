@@ -28,8 +28,9 @@ class ModulesList(loader.Module):
 
     strings = {
         "name": "ModList",
-        "setted": "Текст успешно поставлен",
-        "added": "Чат <code>{}</code> добавлен",
+        "setted": "Text successfully added",
+        "added": "Chat <code>{}</code> added",
+        "chat_added": "Chat already added!",
         "channels": (
             "<emoji document_id=5188377234380954537>🌘</emoji> Community-made modules\n"
             "<emoji document_id=5370547013815376328>😶‍🌫️</emoji> @hikarimods"
@@ -71,6 +72,12 @@ class ModulesList(loader.Module):
             "\n<emoji document_id=5418360054338314186>📢</emoji> @codrago_m"
         ),
     }
+    strings_ru = {
+        "name": "ModList",
+        "setted": "Текст успешно поставлен",
+        "added": "Чат <code>{}</code> добавлен",
+        "chat_added": "Чат уже добавлен!",
+    }
 
     async def client_ready(self, client, db):
         self.db = db
@@ -96,7 +103,7 @@ class ModulesList(loader.Module):
         self._floodwait: dict = self.get("floodwait", {})
         if message.chat_id in self.config["ids"] and message.raw_text == "#modules":
             if message.from_id not in self._floodwait.keys():
-                await message.reply(self._text)
+                await message.reply(self._offtext)
                 now = dt.now()
                 fw_time = now + datetime.timedelta(seconds=3.5)
                 self._floodwait.update({message.from_id: fw_time})
@@ -125,4 +132,4 @@ class ModulesList(loader.Module):
             self.config["ids"].append(message.chat_id)
             await utils.answer(message, self.strings["added"].format(message.chat_id))
         else:
-            await utils.answer(message, "Чат уже был добавлен.")
+            await utils.answer(message, self.strings["chat_added"])
