@@ -25,6 +25,7 @@ class ID(loader.Module):
     strings = {
     "name": "ID",
     "Error_reply": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Where your reply?</b>",
+    "not_chat": "<emoji document_id=5328145443106873128>✖️</emoji> <b>This is not a chat!</b>"
     }
     
     async def useridcmd(self, message):
@@ -41,4 +42,7 @@ class ID(loader.Module):
 
     async def chatidcmd(self, message):
         """| Get chat ID"""
-        await utils.answer(message, f"<emoji document_id=5436024756610546212>⚡</emoji> <b>Chat ID</b>: <code>{message.peer_id.channel_id}</code>")
+        if message.peer_id.user_id:
+            await utils.answer(message, self.strings["not_chat"])
+        else:
+            await utils.answer(message, f"<emoji document_id=5436024756610546212>⚡</emoji> <b>Chat ID</b>: <code>{message.peer_id.channel_id}</code>")
