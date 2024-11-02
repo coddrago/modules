@@ -27,6 +27,12 @@ class ID(loader.Module):
     "Error_reply": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Where your reply?</b>",
     "not_chat": "<emoji document_id=5328145443106873128>✖️</emoji> <b>This is not a chat!</b>"
     }
+
+    strings_ru = {
+    "Error_reply": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Где твой реплай?</b>",
+    "not_chat": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Это не чат!</b>"
+}
+
     
     async def useridcmd(self, message):
         """[reply] | Get User ID"""
