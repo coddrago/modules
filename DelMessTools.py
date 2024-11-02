@@ -35,6 +35,17 @@ class DelMessTools(loader.Module):
         "purge_type_complete": "Messages of the specified type have been deleted."
     }
 
+    strings_ru = {
+    "purge_complete": "Все ваши сообщения были удалены.",
+    "purge_reply_complete": "Сообщения до указанного ответа были удалены.",
+    "purge_keyword_complete": "Сообщения, содержащие ключевое слово, были удалены.",
+    "purge_time_complete": "Сообщения в указанном временном диапазоне были удалены.",
+    "purge_media_complete": "Все ваши медиа-сообщения были удалены.",
+    "purge_length_complete": "Сообщения указанной длины были удалены.",
+    "purge_type_complete": "Сообщения указанного типа были удалены."
+    }
+
+
     async def purgecmd(self, message: Message):
         """ [reply] [-img] [-voice] [-file] - delete all your messages in current chat or only ones up to the message you replied to"""
         reply = await message.get_reply_message()
