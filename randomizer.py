@@ -32,6 +32,15 @@ class Randomizer(loader.Module):
     "Not_chat": "<emoji document_id=5328145443106873128>✖️</emoji> This is not a chat!",
     "Error_num": "<emoji document_id=5328145443106873128>✖️</emoji> Error with numbers! Check your config",
     }
+
+    strings_ru = {
+    "not_args": "<emoji document_id=5328145443106873128>✖️</emoji> Ваши аргументы не были указаны.",
+    "Num1": "Число 1 для RandomCMD",
+    "Num2": "Число 2 для RandomCMD",
+    "Not_chat": "<emoji document_id=5328145443106873128>✖️</emoji> Это не чат!",
+    "Error_num": "<emoji document_id=5328145443106873128>✖️</emoji> Ошибка с числами! Проверьте ваш конфиг",
+    }
+
     
     def __init__(self):
         self.config = loader.ModuleConfig(
