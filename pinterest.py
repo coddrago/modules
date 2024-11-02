@@ -27,6 +27,10 @@ class PinterestDownloader(loader.Module):
     "name": "PinterestDownloader",
     "Error": "<emoji document_id=5328145443106873128>✖️</emoji> Where args?",
     }
+
+    strings_ru = {
+    "Error": "<emoji document_id=5328145443106873128>✖️</emoji> Где аргументы?"
+    }
     
     async def pinterestcmd(self, message):
         """Gives a link to download"""
