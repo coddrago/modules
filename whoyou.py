@@ -25,6 +25,14 @@ class WhoYouMod(loader.Module):
         "Answer_b": "Module response to a random or any answer",
     }
     
+    strings_ru = {
+    "Answer": "Ответ, который должен сделать ответ модуля отличным от других.",
+    "Question": "Просто ваш вопрос",
+    "Answer_a": "Ответ модуля на заданный ответ в конфиге",
+    "Answer_b": "Ответ модуля на случайный или любой ответ",
+    }
+
+    
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
