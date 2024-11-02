@@ -26,15 +26,27 @@ class dox(loader.Module):
     """Maybe... doxing tool?"""
     
     strings = {
-        "name": "DoxTool",
-        "gb_1": "Searching for vicrim's number...",
-        "gb_2": "Searching for victim's address and name...",
-        "gb_3": "Search for parents...",
-        "gb_4": "Searching for a school...",
-        "gb_5": "Finding parents' jobs...",
-        "gb_r": "Мой хозяин плохо себя вел и я решил слить инфу о нем!\n\n├ Телефон: разъебанный \n├ Страна: обычная \n├ Регион: пиздоболов \n├ Родители : скокро не будет\n├ Адрес: канава  на Арбате \n├ Имя: нахуй ты родился\n├ Отчество: отсутствует \n├ Фамилия: отсутствует \n├ Сколько раз ебали в дырку: 32\n├ Пол: ленолиум \n├ Дом : канава на Арбате \n├ сосёт в день: 20 (раз) за 10 руб\n├ больница : не пускают \n├ Цвет говна: нету, ибо не хавает \n├ Простата: массирована\n├Рот: выебан\n└ #####################\n\nМать : шлюха \nместо работы матери: трасса\nСтрана: \nсостоящаяся в снггород: я ебу? \nродилась: где-то под забором\n\nОтец: бомж, \nместо работы: на улице бичевать, просить мелочь\nСтрана: состоящаяся в снггород: я ебу?\nродился: в канализации\nШкола: далбоебов",
-        "info": "This module was created solely for entertainment purposes, its functionality is created solely for the sake of a joke"
-     }
+    "name": "DoxTool",
+    "gb_1": "Searching for the victim's number...",
+    "gb_2": "Searching for the victim's address and name...",
+    "gb_3": "Searching for parents...",
+    "gb_4": "Searching for a school...",
+    "gb_5": "Finding parents' jobs...",
+    "gb_r": "My owner behaved badly, so I decided to leak info about him!\n\n├ Phone: wrecked\n├ Country: normal\n├ Region: of liars\n├ Parents: soon will be gone\n├ Address: a ditch on Arbat\n├ Name: why were you born\n├ Middle name: missing\n├ Surname: missing\n├ How many times screwed: 32\n├ Gender: linoleum\n├ House: a ditch on Arbat\n├ Sucks per day: 20 (times) for 10 rub\n├ Hospital: not allowed in\n├ Poop color: none, doesn’t eat\n├ Prostate: massaged\n├ Mouth: ruined\n└ #####################\n\nMother: a prostitute\nMother’s workplace: the highway\nCountry: in the CIS\nCity: how should I know?\nBorn: somewhere under a fence\n\nFather: a homeless\nWorkplace: begging on the street\nCountry: in the CIS\nCity: how should I know?\nBorn: in the sewers\nSchool: of fools",
+    "info": "This module is created solely for entertainment purposes, its functionality is solely for the sake of a joke"
+    }
+    strings_ru = {
+    "name": "DoxTool",
+    "gb_1": "Поиск номера жертвы...",
+    "gb_2": "Поиск адреса и имени жертвы...",
+    "gb_3": "Поиск родителей...",
+    "gb_4": "Поиск школы...",
+    "gb_5": "Поиск работы родителей...",
+    "gb_r": "Мой хозяин плохо себя вел, и я решил слить инфу о нем!\n\n├ Телефон: разъебанный\n├ Страна: обычная\n├ Регион: пиздоболов\n├ Родители: скоро не будет\n├ Адрес: канава на Арбате\n├ Имя: нахуй ты родился\n├ Отчество: отсутствует\n├ Фамилия: отсутствует\n├ Сколько раз ебали в дырку: 32\n├ Пол: ленолиум\n├ Дом: канава на Арбате\n├ Сосёт в день: 20 (раз) за 10 руб\n├ Больница: не пускают\n├ Цвет говна: нету, ибо не хавает\n├ Простата: массирована\n├ Рот: выебан\n└ #####################\n\nМать: шлюха\nМесто работы матери: трасса\nСтрана: состоящаяся в СНГ\nГород: я ебу?\nРодилась: где-то под забором\n\nОтец: бомж,\nМесто работы: на улице бичевать, просить мелочь\nСтрана: состоящаяся в СНГ\nГород: я ебу?\nРодился: в канализации\nШкола: далбоебов",
+    "info": "Этот модуль создан исключительно в развлекательных целях, его функциональность сделана исключительно ради шутки"
+    }
+
+
     
     async def gbcmd(self, message):
         """search in databases eye of god!"""
