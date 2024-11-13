@@ -125,8 +125,8 @@ class ModulesList(loader.Module):
         """ | Official channel with modules"""
         await utils.answer(message, self.strings["officialChannels"])
 
-    @loader.command(alias="addmchat", rudoc="[BOT API ID] | Добавить чат")
-    async def addchat(self, message: Message):
+    @loader.command(rudoc="[BOT API ID] | Добавить чат")
+    async def addmchat(self, message: Message):
         """[BOT API ID] | add chat"""
         if message.chat_id not in self.config["ids"]:
             self.config["ids"].append(message.chat_id)
