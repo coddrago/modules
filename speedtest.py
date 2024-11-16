@@ -27,19 +27,19 @@ class SpeedTestMod(loader.Module):
         "name": "SpeedTest",
         "running": "<emoji document_id=5870718740236079262>🌐</emoji> <b>Running speedtest...</b>",
         "results": "<emoji document_id=5870718740236079262>🌐</emoji> <b>Speedtest Results:</b>\n\n"
-                   "<emoji document_id=5870718740236079262>🌐</emoji> <b>Download:</b> {download} Mbps\n"
-                   "<emoji document_id=5870729082517328189>📊</emoji> <b>Upload:</b> {upload} Mbps\n"
+                   "<emoji document_id=5870718740236079262>🌐</emoji> <b>Download:</b> <code>{download} Mbps</code>\n"
+                   "<emoji document_id=5870729082517328189>📊</emoji> <b>Upload:</b> <code>{upload} Mbps</code>\n"
                    "<emoji document_id=5222108309795908493>✨</emoji> <b>Ping:</b> {ping} ms",
         "error": "🚫 <b>Error running speedtest:</b> <code>{error}</code>",
     }
     
     strings_ru = { 
-        "running": "<emoji document_id=5870718740236079262>🌐</emoji> Запуск теста скорости...",
-        "results": "<emoji document_id=5870718740236079262>🌐</emoji> Результаты теста скорости:\n\n"
-                   "<emoji document_id=5870718740236079262>🌐</emoji> Скачивание: {download} Мбит/с\n"
-                   "<emoji document_id=5870729082517328189>📊</emoji> Загрузка: {upload} Мбит/с\n"
+        "running": "<emoji document_id=5870718740236079262>🌐</emoji> <b>Запуск теста скорости...</b>",
+        "results": "<emoji document_id=5870718740236079262>🌐</emoji> <b>Результаты теста скорости:</b>\n\n"
+                   "<emoji document_id=5870718740236079262>🌐</emoji> <b>Скачивание:</b> <code>{download} Мбит/с</code>\n"
+                   "<emoji document_id=5870729082517328189>📊</emoji> <b>Загрузка:</b> <code>{upload} Мбит/с</code>\n"
                    "<emoji document_id=5222108309795908493>✨</emoji> Пинг: {ping} мс",
-        "error": "🚫 Ошибка при запуске теста скорости: {error}",
+        "error": "🚫 <b>Ошибка при запуске теста скорости:</b> <code>{error}</code>",
     }
 
     async def client_ready(self, client, db):
