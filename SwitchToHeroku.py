@@ -65,4 +65,4 @@ class SwitchToHeroku(loader.Module):
 
         self.set("done", True)
 
-        await self.invoke('restart', '-f', peer_id)
+        await self.invoke('update', '-f', peer_id)
