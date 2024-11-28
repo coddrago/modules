@@ -20,7 +20,7 @@ class SwitchToHeroku(loader.Module):
         if self.get("done"):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[[
                 InlineKeyboardButton(text='🥷 Support chat', url='https://t.me/heroku_talks')],[
-                InlineKeyboardButton(text='📖 Github', url='https://github.com/coddrago/Hikka')
+                InlineKeyboardButton(text='📖 Github', url='https://github.com/coddrago/Heroku')
             ]]
             )
             await self.inline._bot.send_photo(
@@ -47,7 +47,7 @@ class SwitchToHeroku(loader.Module):
         await utils.answer(message, "Everything is okay, I started switching...")
 
         await asyncio.create_subprocess_shell(
-            "git remote set-url origin https://github.com/coddrago/Hikka.git",
+            "git remote set-url origin https://github.com/coddrago/Heroku.git",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -64,7 +64,7 @@ class SwitchToHeroku(loader.Module):
 
         peer_id = self.inline.bot_id
 
-        await self.invoke('fconfig', 'updater GIT_ORIGIN_URL https://github.com/coddrago/Hikka', peer_id)
+        await self.invoke('fconfig', 'updater GIT_ORIGIN_URL https://github.com/coddrago/Heroku', peer_id)
 
         await utils.answer(message, "Automatically restarting. (after restart, it`s all done)")
 
