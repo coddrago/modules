@@ -1,4 +1,3 @@
-
 # ---------------------------------------------------------------------------------
 #░█▀▄░▄▀▀▄░█▀▄░█▀▀▄░█▀▀▄░█▀▀▀░▄▀▀▄░░░█▀▄▀█
 #░█░░░█░░█░█░█░█▄▄▀░█▄▄█░█░▀▄░█░░█░░░█░▀░█
@@ -20,6 +19,8 @@ from .. import loader, utils
 
 from datetime import datetime as dt
 import datetime
+import json
+import requests
 
 
 @loader.tds
@@ -33,32 +34,9 @@ class ModulesList(loader.Module):
         "chat_added": "Chat already added!",
         "channels": (
             "<emoji document_id=5188377234380954537>🌘</emoji> Community-made modules\n"
-            "\n<emoji document_id=5370547013815376328>😶‍🌫️</emoji> <b>@hikarimods</b>"
-            "\n<emoji document_id=5445096582238181549>🦋</emoji> <b>@morisummermods</b>"
-            "\n<emoji document_id=5449380056201697322>💚</emoji> <b>@nalinormods</b>"
-            "\n<emoji document_id=5373026167722876724>🤩</emoji> <b>@AstroModules</b>"
-            "\n<emoji document_id=5249042457731024510>💪</emoji> <b>@vsecoder_m</b>"
-            "\n<emoji document_id=5371037748188683677>☺️</emoji> <b>@mm_mods</b>"
-            "\n<emoji document_id=5370856741086960948>😈</emoji> <b>@apodiktum_modules</b>"
-            "\n<emoji document_id=5370947515220761242>😇</emoji> <b>@wilsonmods</b>"
-            "\n<emoji document_id=5467406098367521267>👑</emoji> <b>@DorotoroMods</b>"
-            "\n<emoji document_id=5469986291380657759>✌️</emoji> <b>@HikkaFTGmods</b>"
-            "\n<emoji document_id=5472091323571903308>🎈</emoji> <b>@nercymods</b>"
-            "\n<emoji document_id=5436024756610546212>⚡</emoji> <b>@hikka_mods</b>"
-            "\n<emoji document_id=5298799263013151249>😐</emoji> <b>@sqlmerr_m</b>"
-            "\n<emoji document_id=5418360054338314186>📢</emoji> <b>@codrago_m</b>"
-            "\n<emoji document_id=5296274178725396201>🥰</emoji> <b>@AuroraModules</b>"
-            "\n<emoji document_id=5429400349377051725>😄</emoji> <b>@BHikkaMods</b>"
-            "\n<emoji document_id=5325842550362218999>😼</emoji> <b>@HikamoruMods</b>"
-            "\n<emoji document_id=5438420661166944213>😈</emoji> <b>@shadow_modules</b>"
-            "\n<emoji document_id=4994496741282677708>🖥</emoji> <b>@NervousMods</b>"
-            "\n<emoji document_id=5298495591645453197>⌨️</emoji> <b>@kmodules</b>"
-            "\n<emoji document_id=5352962421273159283>👅</emoji> <b>@angellmodules</b>"
-            "\n<emoji document_id=5361600498153564481>🦐</emoji> <b>@shrimp_mod</b>"
         ),
         "officialChannels": (
             "<emoji document_id=5188377234380954537>🌘</emoji> Community-made modules\n"
-            "\n<emoji document_id=5370547013815376328>😶‍🌫️</emoji> <b>@hikarimods</b>"
             "\n<emoji document_id=5445096582238181549>🦋</emoji> <b>@morisummermods</b>"
             "\n<emoji document_id=5449380056201697322>💚</emoji> <b>@nalinormods</b>"
             "\n<emoji document_id=5373026167722876724>🤩</emoji> <b>@AstroModules</b>"
@@ -97,8 +75,26 @@ class ModulesList(loader.Module):
                     loader.validators.Series(), loader.validators.TelegramID()
                 ),
             ),
-        )
+                loader.ConfigValue(
+                    "linktodata",
+                    "https://raw.githubusercontent.com/coddrago/modules/main/modules.json",
+                    lambda: 'link for modules',
+                    validator=loader.validators.Link()
+                ),
+            )
         self._ids: list = self.config["ids"]
+
+    def get_data(self, official: bool=True, unofficial: bool=False):
+        data: dict = json.loads(
+            requests.get(self.config['linktodata']).text
+        )['official']
+
+        developers = []
+
+        for username, emoji in data.items():
+            developers.append(f'{emoji} <b>@{username}</b>')
+
+        return developers
 
     @loader.watcher()
     async def watcher_modules(self, message: Message):
@@ -120,12 +116,16 @@ class ModulesList(loader.Module):
     @loader.command(alias="mlist", ru_doc=" | Быстрый доступ к каналам с модулями ")
     async def modlist(self, message: Message):
         """ | Quick access to channels with modules"""
-        await utils.answer(message, self._text)
+        devs = self.get_data(unofficial=True)
+
+        await utils.answer(message, '\n'.join(devs))
 
     @loader.command(alias="offmlist", ru_doc=" | Оффициальные каналы с модулями ")
     async def offmodlist(self, message: Message): 
         """ | Official channel with modules"""
-        await utils.answer(message, self.strings["officialChannels"])
+        devs = self.get_data(official=True)
+
+        await utils.answer(message, '\n'.join(devs))
 
     @loader.command(rudoc="[BOT API ID] | Добавить чат")
     async def addmchat(self, message: Message):
