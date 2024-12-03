@@ -13,9 +13,8 @@
         "nercymods": "<emoji document_id=5472091323571903308>🎈</emoji>",
         "sqlmerr_m": "<emoji document_id=5298799263013151249>😐</emoji>",
         "AuroraModules": "<emoji document_id=5296274178725396201>🥰</emoji>",
-        "codrago_m": "<emoji document_id=5418360054338314186>📢</emoji>",
-        },
-
+        "codrago_m": "<emoji document_id=5418360054338314186>📢</emoji>"
+    },
     "unofficial": {
         "hikarimods": "<emoji document_id=5370547013815376328>😶‍🌫️</emoji>",
         "morisummermods": "<emoji document_id=5445096582238181549>🦋</emoji>",
@@ -35,8 +34,6 @@
         "HikamoruMods": "<emoji document_id=5325842550362218999>😼</emoji>",
         "shadow_modules": "<emoji document_id=5438420661166944213>😈</emoji>",
         "kmodules": "<emoji document_id=5298495591645453197>⌨️</emoji>",
-        "angellmodules": "<emoji document_id=5352962421273159283>👅</emoji>",
-        "": "",
-
-    },
+        "angellmodules": "<emoji document_id=5352962421273159283>👅</emoji>"
+    }
 }
