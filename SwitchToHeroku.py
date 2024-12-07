@@ -66,7 +66,7 @@ class SwitchToHeroku(loader.Module):
 
         await self.invoke('fconfig', 'updater GIT_ORIGIN_URL https://github.com/coddrago/Heroku', peer_id)
 
-        await utils.answer(message, "Automatically restarting. (after restart, it`s all done)")
+        await utils.answer(message, "Automatically restarting. (after restart, it's all done)")
 
         self.set("done", True)
 
