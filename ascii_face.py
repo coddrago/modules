@@ -29,6 +29,7 @@ class Ascii_face(loader.Module):
     
     strings_ru = {
     "ascii_face": "<emoji document_id=5343719226450385808>😛</emoji> <b>Ваш рандомный AsciiFace:</b> "
+    }
 
     async def asciicmd(self, message):
         """| Get random ascii face"""
