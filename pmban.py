@@ -124,7 +124,7 @@ class PMBan(loader.Module):
         self.scheduler.shutdown()
 
 
-    @loader.command(only_pm=True)
+    @loader.command()
     async def pmban(self, message):
         """| ban in PM for time"""
     
