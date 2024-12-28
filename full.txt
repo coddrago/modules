@@ -12,3 +12,4 @@ DelMessTools
 hentai
 speedtest
 ascii_face
+pmban
