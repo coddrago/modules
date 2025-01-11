@@ -39,6 +39,8 @@ class EmojiDownloadMod(loader.Module):
         reply = await message.get_reply_message()
         if not getattr(reply, "id", None):
             await utils.answer(message, "<emoji document_id=5328145443106873128>✖️</emoji> Where is reply for your emoji?")
+        if self.client.hikka_me.premium == False:
+            await utils.answer(message, "<emoji document_id=5328145443106873128>✖️</emoji> Sorry, but module only for premium users")
             return
 
         try:
