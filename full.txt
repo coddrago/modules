@@ -14,3 +14,4 @@ speedtest
 ascii_face
 pmban
 emojidown
+figlet
