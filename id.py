@@ -49,14 +49,14 @@ class ID(loader.Module):
         except ValueError:
             user = await message.client.get_entity(message.sender_id)
 
-        await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5195221848882690352>🤩</emoji> <b>User ID:</b> <code>{user.id}</code>")
+        await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
 
     async def idcmd(self, message):
         """| Get your ID"""
         
         user = await message.client.get_entity(message.sender_id)
  
-        await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji><b> Your Nick:</b> {user.first_name}\n<emoji document_id=5436024756610546212>⚡</emoji> <b>Your ID</b>: <code>{message.sender_id}</code>")
+        await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji><b> Your Nick:</b> {user.first_name}\n<emoji document_id=5314260526803462610>😴</emoji> <b>Your ID</b>: <code>{message.sender_id}</code>")
 
     async def chatidcmd(self, message):
         """| Get chat ID"""
