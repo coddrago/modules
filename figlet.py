@@ -34,12 +34,12 @@ class Figlet(loader.Module):
 }
 
     async def figletcmd(self, message):
-        """- run figlet command"""
+        """[args] | run figlet command"""
 
         args=utils.get_args_raw(message)
         
         try:
-            result = subprocess.run(["figlet", f"'{args}'"], capture_output=True, text=True)
+            result = subprocess.run(["figlet", f"{args}"], capture_output=True, text=True)
             output = result.stdout
             await utils.answer(message, f"<pre>{utils.escape_html(output)}</pre>")
             
