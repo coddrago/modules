@@ -54,7 +54,7 @@ class ID(loader.Module):
     async def idcmd(self, message):
         """| Get your ID"""
         
-        user = message.get_sender()
+        user = await message.client.get_entity(message.sender_id)
  
         await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji><b> Your Nick:</b> {user.first_name}\n<emoji document_id=5436024756610546212>⚡</emoji> <b>Your ID</b>: <code>{message.sender_id}</code>")
 
