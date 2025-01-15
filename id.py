@@ -61,4 +61,4 @@ class ID(loader.Module):
     async def chatidcmd(self, message):
         """| Get chat ID"""
 
-        await utils.answer(message, f"<emoji document_id=5436024756610546212>⚡</emoji> <b>Chat ID</b>: <code>{message.peer_id.channel_id}</code>")
+        await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji><code> {message.chat.title}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>Chat ID</b>: <code>{message.peer_id.channel_id}</code>")
