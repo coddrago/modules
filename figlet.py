@@ -32,7 +32,7 @@ class Figlet(loader.Module):
 
     strings_ru = {
     "not_installed": "<emoji document_id=5328145443106873128>✖️</emoji> <b>У вас не установлен Figlet! Установите его командой <code>.terminal sudo apt install figlet -y</code></b>",
-    "no_args": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Где аргументы?</b>
+    "no_args": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Где аргументы?</b>"
 }
   
     def __init__(self):
