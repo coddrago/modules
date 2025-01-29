@@ -26,11 +26,13 @@ class Figlet(loader.Module):
     """Tool for work with figlet"""
     strings = {
     "name": "Figlet",
-    "not_installed": "<emoji document_id=5328145443106873128>✖️</emoji> <b>You don't have Figlet installed! Install it with <code>.terminal sudo apt install figlet -y</code></b>"
+    "not_installed": "<emoji document_id=5328145443106873128>✖️</emoji> <b>You don't have Figlet installed! Install it with <code>.terminal sudo apt install figlet -y</code></b>",
+    "no_args": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Where args?</b>"
     }
 
     strings_ru = {
-    "not_installed": "<emoji document_id=5328145443106873128>✖️</emoji> <b>У вас не установлен Figlet! Установите его командой <code>.terminal sudo apt install figlet -y</code></b>"
+    "not_installed": "<emoji document_id=5328145443106873128>✖️</emoji> <b>У вас не установлен Figlet! Установите его командой <code>.terminal sudo apt install figlet -y</code></b>",
+    "no_args": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Где аргументы?</b>
 }
   
     def __init__(self):
@@ -47,14 +49,17 @@ class Figlet(loader.Module):
         """[args] | run figlet command"""
 
         args=utils.get_args_raw(message)
-        
-        try:
-            result = subprocess.run(["figlet", "-f", f"{self.config['font']}", f"{args}"], capture_output=True, text=True)
-            output = result.stdout
-            await utils.answer(message, f"<pre>ᅠ\n{utils.escape_html(output)}</pre>")
+
+        if not args: 
+            await utils.answer(message, self.strings["no_args"])
+        else:
+            try:
+                result = subprocess.run(["figlet", "-f", f"{self.config['font']}", f"{args}"], capture_output=True, text=True)
+                output = result.stdout
+                await utils.answer(message, f"<pre>ᅠ\n{utils.escape_html(output)}</pre>")
             
-        except FileNotFoundError:
-            await utils.answer(message, self.strings["not_installed"])
+            except FileNotFoundError:
+                await utils.answer(message, self.strings["not_installed"])
     
     async def figlistcmd(self, message):
         """| see list of all fonts"""
