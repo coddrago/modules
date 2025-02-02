@@ -13,6 +13,8 @@
 # Commands: figlet
 # scope: hikka_only
 # meta developer: @codrago_m
+# meta banner: https://mods.codrago.top/banners/loli.png
+# meta pic: https://0x0.st/s/P0iSUm3VUe-mY3Soc7qRAQ/8KPV.webp
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
