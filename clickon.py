@@ -23,6 +23,7 @@ import asyncio
 @loader.tds
 class AutoClickerMod(loader.Module):
     """Модуль для автоматического нажатия на инлайн кнопки."""
+
     strings = {'name': 'AutoClicker'}
 
     async def clickoncmd(self, message):
