@@ -20,6 +20,7 @@ import requests, random
 
 class RandomNumbersMod(loader.Module):
     """Развлекательный модуль"""
+
     strings = {"name": "RandomNumbers"}
 
     def __init__(self):
