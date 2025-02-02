@@ -13,7 +13,8 @@
 
 # meta developer: @codrago_m, @ytkanelox
 # meta banner: https://mods.codrago.top/banners/clicon.png
-# meta pic: https://0x0.st/s/7EWHGzqAj49M6PDMeawuzw/8KPu.webp ---------------------------------------------------------------------------------
+# meta pic: https://0x0.st/s/7EWHGzqAj49M6PDMeawuzw/8KPu.webp
+# ---------------------------------------------------------------------------------
 
 from telethon import events
 from .. import loader, utils
