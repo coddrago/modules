@@ -25,6 +25,7 @@ import asyncio
 @loader.tds
 class Compliments(loader.Module):
     """Compliments for your partner"""
+
     strings = {
     "name": "Compliments",
     "speed_cfg": "Delay between edits"
