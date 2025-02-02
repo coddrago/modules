@@ -14,7 +14,8 @@
 # scope: hikka_only
 # meta developer: @codrago_m
 # meta banner: https://mods.codrago.top/banners/ascii_face.png
-# meta pic: https://0x0.st/s/TGT42nesnQ5TwvixG8nFEQ/8KPa.webp ---------------------------------------------------------------------------------
+# meta pic: https://0x0.st/s/TGT42nesnQ5TwvixG8nFEQ/8KPa.webp
+# ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
 
