@@ -32,6 +32,7 @@ logger = logging.getLogger("LoliHentai")
 @loader.tds
 class lolihentai(loader.Module):
     """Your the best friend in loli hentai"""
+
     strings = {
         "name": "LoliHentai",
         "loading_photo": "<emoji document_id=5215327832040811010>⏳</emoji> <b>loading your loli photo...</b>",
