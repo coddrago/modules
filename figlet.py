@@ -26,6 +26,7 @@ from .. import loader, utils
 @loader.tds
 class Figlet(loader.Module):
     """Tool for work with figlet"""
+
     strings = {
     "name": "Figlet",
     "not_installed": "<emoji document_id=5328145443106873128>✖️</emoji> <b>You don't have Figlet installed! Install it with <code>.terminal sudo apt install figlet -y</code></b>",
