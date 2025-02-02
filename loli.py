@@ -13,6 +13,8 @@
 # Commands: loli, lolic
 # scope: hikka_only
 # meta developer: @codrago_m
+# meta banner: https://mods.codrago.top/banners/loli.png
+# meta pic: https://0x0.st/s/uGDXu48zQjT7vFTRcl2nAA/8KP3.png
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 6, 0)
