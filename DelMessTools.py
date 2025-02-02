@@ -13,8 +13,8 @@
 # Commands: purgetime, purgelength, purgekeyword, purge
 # scope: hikka_only
 # meta developer: @codrago_m
-# meta pic: https://mods.codrago.top/banners/DelMessTools.png
-# meta banner: https://0x0.st/s/xyBvBmm0nYFKB5KuhF8rXQ/8KK0.png ---------------------------------------------------------------------------------
+# meta banner: https://mods.codrago.top/banners/DelMessTools.png
+# meta pic: https://0x0.st/s/JjNl2wBorRA1dLagHgUBvQ/8KK5.webp ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
 
