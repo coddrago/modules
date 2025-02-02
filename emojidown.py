@@ -13,6 +13,8 @@
 # Commands: emojidown
 # scope: hikka_only
 # meta developer: @codrago_m
+# meta banner: https://mods.codrago.top/banners/loli.png
+# meta pic: https://0x0.st/s/xMv47XPyGMimCREVC6vfXA/8KPp.webp
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
