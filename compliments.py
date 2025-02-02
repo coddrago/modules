@@ -14,7 +14,8 @@
 # scope: hikka_only
 # meta developer: @codrago_m
 # meta banner: https://mods.codrago.top/banners/compliments.png
-# meta pic: https://0x0.st/s/i1wijQ_XEUpGaHPXHUdjHQ/8KPS.webp#nsfw ---------------------------------------------------------------------------------
+# meta pic: https://0x0.st/s/i1wijQ_XEUpGaHPXHUdjHQ/8KPS.webp
+# ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
 
