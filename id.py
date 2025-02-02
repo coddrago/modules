@@ -24,6 +24,7 @@ from .. import loader, utils
 @loader.tds
 class ID(loader.Module):
     """ID of all!"""
+
     strings = {
     "name": "ID",
     "Error_reply": "<emoji document_id=5328145443106873128>✖️</emoji> <b>Where your reply?</b>",
