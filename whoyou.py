@@ -8,6 +8,8 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta developer: @codrago_m
+# meta banner: https://mods.codrago.top/banners/whoyou.png
+# meta pic: https://0x0.st/s/1Ygc1jQQyLJJ2f0Z1vyJ6w/8KPF.webp
 # ---------------------------------------------------------------------------------
 
 from telethon import events
