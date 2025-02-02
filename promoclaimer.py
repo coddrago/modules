@@ -13,6 +13,8 @@
 # Commands: checktokens
 # scope: hikka_only
 # meta developer: @codrago_m
+# meta banner: https://mods.codrago.top/banners/promoclaimer.png
+# meta pic: https://0x0.st/s/rb3ABc1QP3OIMXnQEBiIcA/8KPn.webp
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
