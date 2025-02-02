@@ -24,6 +24,7 @@ from .. import loader, utils
 @loader.tds
 class Ascii_face(loader.Module):
     """Random Ascii Face from utils"""
+
     strings = {
     "name": "Ascii_Face",
     "ascii_face": "<emoji document_id=5343719226450385808>😛</emoji> <b>Your random AsciiFace:</b> ",
