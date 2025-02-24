@@ -1,12 +1,9 @@
+
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from hikkatl.types import Message
 from .. import loader, utils
 import asyncio
-
-# thx to murulose
-
-# 🔒      Licensed under the GNU AGPLv3
-
 
 @loader.tds
 class SwitchToHeroku(loader.Module):
