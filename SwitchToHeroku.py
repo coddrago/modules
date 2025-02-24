@@ -1,4 +1,21 @@
-
+# ---------------------------------------------------------------------------------
+#░█▀▄░▄▀▀▄░█▀▄░█▀▀▄░█▀▀▄░█▀▀▀░▄▀▀▄░░░█▀▄▀█
+#░█░░░█░░█░█░█░█▄▄▀░█▄▄█░█░▀▄░█░░█░░░█░▀░█
+#░▀▀▀░░▀▀░░▀▀░░▀░▀▀░▀░░▀░▀▀▀▀░░▀▀░░░░▀░░▒▀
+# Name: switchtoheroku
+# Description: Switch your hikka to heroku
+# Author: @codrago_m
+# ---------------------------------------------------------------------------------
+# 🔒    Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ---------------------------------------------------------------------------------
+# Author: @codrago
+# Commands: switchtoheroku
+# meta developer: @codrago_m
+# meta_desc: Switch your hikka to heroku
+# meta banner: https://mods.codrago.top/banners/banner.png
+# meta pic: https://kappa.lol/2Z_Q-
+# ---------------------------------------------------------------------------------
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from hikkatl.types import Message
