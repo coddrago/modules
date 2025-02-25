@@ -51,10 +51,12 @@ class ID(loader.Module):
                 user = await message.client.get_entity(reply.sender_id)
         except ValueError:
             user = await message.client.get_entity(message.sender_id)
-        if not user.title:
-            await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
-        else:
+
+        if not user.first_name:
             await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.title}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
+
+        else:
+            await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
 
     async def idcmd(self, message):
         """| Get your ID"""
