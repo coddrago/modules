@@ -65,7 +65,7 @@ class ID(loader.Module):
         if isinstance(user, tl.types.User):
             await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
 
-        elif self.config["bot_api_id] == True:
+        elif self.config["bot_api_id"] == True:
             await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.title}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>-100{user.id}</code>")
 
         else:
