@@ -20,6 +20,7 @@
 __version__ = (1, 0, 0)
 
 from .. import loader, utils
+import telethon as tl
 
 @loader.tds
 class ID(loader.Module):
@@ -52,11 +53,11 @@ class ID(loader.Module):
         except ValueError:
             user = await message.client.get_entity(message.sender_id)
 
-        if not user.first_name:
-            await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.title}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
+        if isinstance(user, tl.types.User):
+            await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
 
         else:
-            await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.first_name}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
+            await utils.answer(message, f"<emoji document_id=5301034196490268401>🪐</emoji> <bUser:</b> <code>{user.title}</code>\n<emoji document_id=5314260526803462610>😴</emoji> <b>User ID:</b> <code>{user.id}</code>")
 
     async def idcmd(self, message):
         """| Get your ID"""
