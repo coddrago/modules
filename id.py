@@ -14,7 +14,7 @@
 # scope: hikka_only
 # meta developer: @codrago_m
 # meta banner: https://mods.codrago.top/banners/id.png
-# meta pic: https://0x0.st/s/08-gkYETpY6T2EfdVLbjcw/8KPt.webp
+# meta pic: https://kappa.lol/p3wVI
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)
@@ -43,6 +43,7 @@ class ID(loader.Module):
                 "bot_api_id",
                 "True",
                 "Bot API id for channels and chats",
+                validator=loader.validators.Boolean(),
             ),
         )
 
