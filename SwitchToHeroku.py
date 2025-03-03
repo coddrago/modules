@@ -69,6 +69,22 @@ class SwitchToHeroku(loader.Module):
         )
 
         await asyncio.create_subprocess_shell(
+            "git config --global user.email 'you@example.com'",
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=utils.get_base_dir(),
+        )
+
+        await asyncio.create_subprocess_shell(
+            "git config --global user.name 'Your Name'",
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=utils.get_base_dir(),
+        )
+
+        await asyncio.create_subprocess_shell(
             "git pull",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
