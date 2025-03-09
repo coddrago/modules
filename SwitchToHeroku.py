@@ -85,7 +85,7 @@ class SwitchToHeroku(loader.Module):
         )
 
         await asyncio.create_subprocess_shell(
-            "git pull",
+            "git pull --rebase",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
