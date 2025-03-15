@@ -10,7 +10,7 @@
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta developer: @codrago_m
+# meta developer: @codrago_m, @unneyon_hmods
 # meta banner: https://mods.codrago.top/banners/clicon.png
 # meta pic: https://0x0.st/s/7EWHGzqAj49M6PDMeawuzw/8KPu.webp
 # ---------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ import asyncio
 
 @loader.tds
 class AutoClickerMod(loader.Module):
-    """Модуль для автоматического нажатия на инлайн кнопки."""
+    """Autoclicker for inline buttons."""
 
     strings = {
         "name": "AutoClicker",
