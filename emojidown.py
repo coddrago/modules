@@ -52,7 +52,6 @@ class EmojiDownloadMod(loader.Module):
                 await conv.send_message(reply)
                 emoji = await conv.get_response()
                 await conv.mark_read()
-                await message.delete()
                 await utils.answer(message, emoji)
 
             await asyncio.sleep(5)
