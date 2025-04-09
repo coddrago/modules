@@ -16,4 +16,4 @@ pmban
 emojidown
 figlet
 promoclaimer
-passgen
+passwordgen
