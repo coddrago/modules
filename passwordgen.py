@@ -37,7 +37,7 @@ class PassGen(loader.Module):
   
   @loader.command()
   async def passcmd(self, message):
-    """Generate password from utils"""
+    """| Generate password from utils"""
 
     args = int(utils.get_args_raw(message))
     password = utils.rand(args)
@@ -49,7 +49,7 @@ class PassGen(loader.Module):
 
   @loader.command()
   async def passgcmd(self, message):
-    """Generate password from string"""
+    """| Generate password from string"""
 
     args = int(utils.get_args_raw(message))
     characters = string.ascii_letters + string.digits + string.punctuation
