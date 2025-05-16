@@ -9,7 +9,7 @@
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # ---------------------------------------------------------------------------------
-# Author: @codrago
+# Author: @codrago, @mardaster
 # Commands: emojidown
 # scope: hikka_only
 # meta developer: @codrago_m
@@ -20,7 +20,7 @@
 __version__ = (1, 0, 0)
 from .. import loader, utils
 from telethon.tl.types import Message  # type: ignore
-
+import asyncio
 
 @loader.tds
 class EmojiDownloadMod(loader.Module):
@@ -41,6 +41,7 @@ class EmojiDownloadMod(loader.Module):
         reply = await message.get_reply_message()
         if not getattr(reply, "id", None):
             await utils.answer(message, "<emoji document_id=5328145443106873128>✖️</emoji> Where is reply for your emoji?")
+            return
         if self.client.hikka_me.premium == False:
             await utils.answer(message, "<emoji document_id=5328145443106873128>✖️</emoji> Sorry, but module only for premium users")
             return
@@ -51,7 +52,10 @@ class EmojiDownloadMod(loader.Module):
                 await conv.send_message(reply)
                 emoji = await conv.get_response()
                 await conv.mark_read()
-                await message.delete()
                 await utils.answer(message, emoji)
+
+            await asyncio.sleep(5)
+            await self._client.delete_dialog(5792368019)
+
         except ValueError:
             await utils.answer(message, "<emoji document_id=5328145443106873128>✖️</emoji> Where is reply for your emoji?")
