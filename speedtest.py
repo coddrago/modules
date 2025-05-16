@@ -14,7 +14,7 @@
 # scope: hikka_only
 # meta developer: @codrago_m
 # requires: speedtest-cli
-# meta banner: https://mods.codrago.top/banners/speedtest.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
 # meta pic: https://0x0.st/s/de32M5VljJzzSJxSUjrqtA/8KPR.webp
 # ---------------------------------------------------------------------------------
 

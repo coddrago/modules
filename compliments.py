@@ -13,7 +13,7 @@
 # Commands: cg
 # scope: hikka_only
 # meta developer: @codrago_m
-# meta banner: https://mods.codrago.top/banners/compliments.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
 # meta pic: https://0x0.st/s/i1wijQ_XEUpGaHPXHUdjHQ/8KPS.webp
 # ---------------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta developer: @codrago_m
-# meta banner: https://mods.codrago.top/banners/dice.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
 # meta pic: https://0x0.st/s/4xg5IubxTkikjI6JG2AU8w/8KP_.webp
 # ---------------------------------------------------------------------------------
 

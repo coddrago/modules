@@ -1,7 +1,6 @@
 dice
 clickon
 modlist
-whoyou
 loli
 DoxTool
 id
@@ -17,3 +16,4 @@ emojidown
 figlet
 promoclaimer
 passwordgen
+send

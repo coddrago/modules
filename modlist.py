@@ -11,7 +11,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta developer: @codrago_m
-# meta banner: https://mods.codrago.top/banners/loli.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
 # meta pic: https://0x0.st/s/ZgHZlSLgzAG9WPUQy__BVQ/8KPJ.webp
 # ---------------------------------------------------------------------------------
 
