@@ -17,3 +17,4 @@ figlet
 promoclaimer
 passwordgen
 send
+lastfm
