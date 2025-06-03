@@ -1,3 +1,22 @@
+# ---------------------------------------------------------------------------------
+#░█▀▄░▄▀▀▄░█▀▄░█▀▀▄░█▀▀▄░█▀▀▀░▄▀▀▄░░░█▀▄▀█
+#░█░░░█░░█░█░█░█▄▄▀░█▄▄█░█░▀▄░█░░█░░░█░▀░█
+#░▀▀▀░░▀▀░░▀▀░░▀░▀▀░▀░░▀░▀▀▀▀░░▀▀░░░░▀░░▒▀
+# Name: LastFM
+# Description: Module for music from different services
+# Author: @codrago_m
+# ---------------------------------------------------------------------------------
+# 🔒    Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ---------------------------------------------------------------------------------
+# Author: @codrago
+# Commands: nowplay
+# scope: heroku_only
+# meta developer: @codrago_m
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
+# meta pic: https://envs.sh/Hob.webp
+# ---------------------------------------------------------------------------------
+
 from .. import loader, utils 
 from herokutl import events
 import requests

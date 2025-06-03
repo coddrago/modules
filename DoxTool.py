@@ -14,7 +14,7 @@
 # scope: hikka_only
 # meta developer: @codrago_m
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
-# meta pic: https://0x0.st/s/QeZGoQSDvJ2RILRMUOjzfg/8KPc.webp
+# meta pic: https://envs.sh/HJM.webp
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)

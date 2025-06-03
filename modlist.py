@@ -12,7 +12,7 @@
 
 # meta developer: @codrago_m
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
-# meta pic: https://0x0.st/s/ZgHZlSLgzAG9WPUQy__BVQ/8KPJ.webp
+# meta pic: https://envs.sh/HJH.webp
 # ---------------------------------------------------------------------------------
 
 from telethon.types import Message

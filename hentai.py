@@ -14,7 +14,7 @@
 # scope: hikka_only
 # meta developer: @codrago_m
 # meta banner: https://mods.codrago.top/banners/loli.png
-# meta pic: https://0x0.st/s/MqdHp2_yaHlLXdmaXTJ9lQ/8KPW.webp
+# meta pic: https://envs.sh/HJ-.webp
 # ---------------------------------------------------------------------------------
 
 __version__ = (1, 0, 0)

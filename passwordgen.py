@@ -13,7 +13,7 @@
 # Commands: pass, passg
 # meta developer: @codrago_m
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
-# meta pic: https://envs.sh/Lmn.webp
+# meta pic: https://envs.sh/Hoe.webp
 # ---------------------------------------------------------------------------------
 
 from .. import loader, utils
