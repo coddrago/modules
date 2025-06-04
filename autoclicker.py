@@ -11,7 +11,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # meta developer: @codrago_m, @unneyon_hmods
-# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # meta pic: https://envs.sh/HJv.webp
 # ---------------------------------------------------------------------------------
 

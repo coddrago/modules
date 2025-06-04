@@ -13,7 +13,7 @@
 # Commands: id, chatid, userid
 # scope: hikka_only
 # meta developer: @codrago_m
-# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # meta pic: https://envs.sh/HJy.webp
 # ---------------------------------------------------------------------------------
 

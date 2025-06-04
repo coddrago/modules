@@ -20,7 +20,7 @@
 # Commands: pmban, pmunban
 # scope: hikka_only
 # meta developer: @codrago_m, @exttasy1
-# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/master/banner.png
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # meta pic: https://envs.sh/Hoh.webp
 # ---------------------------------------------------------------------------------
 
