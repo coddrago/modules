@@ -18,3 +18,8 @@ promoclaimer
 passwordgen
 send
 lastfm
+dbmod
+chatmodule
+stats
+tagwatcher
+hardspam
