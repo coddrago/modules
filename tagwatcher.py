@@ -171,7 +171,7 @@ class TagWatcher(loader.Module):
             user_id=id,
             msg_content=msg_content,
             reply_content=reply_content,
-            link=await m.link,
+            link=await m.link(),
         )
 
     @loader.command(
