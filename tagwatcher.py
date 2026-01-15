@@ -115,7 +115,7 @@ class TagWatcher(loader.Module):
         )
 
         self.asset_channel = self._db.get("heroku.forums", "channel_id", 0)
-        self._notif_topic = await utils.asset_forum_topic(
+        self._notif_topic = utils.asset_forum_topic(
             self._client,
             self._db,
             self.asset_channel,
