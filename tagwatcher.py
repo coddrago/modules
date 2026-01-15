@@ -123,6 +123,10 @@ class TagWatcher(loader.Module):
             description="Here will be notifications about mentions in chats.",
             icon_emoji_id=5409025823388741707,
         )
+        self.xdlib = await self.import_lib(
+            "https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/libs/xdlib.py",
+            suspend_on_error=True,
+        )
 
     async def render_text(self, m):
         if self.config["custom_notif_text"]:
