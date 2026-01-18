@@ -1,4 +1,5 @@
 # meta developer: @codrago_m
+# scope: heroku_min 2.0.0
 
 import logging
 from .. import utils, loader, main
