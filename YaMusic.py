@@ -389,9 +389,9 @@ class YaMusicMod(loader.Module):
         self._db = db
 
         #utils.register_placeholder(
-            "now_play", self._now_play_placeholder, "placeholder for nowplay music" 
+            #"now_play", self._now_play_placeholder, "placeholder for nowplay music" 
         # Heroku 2.0.0 feature
-        )
+        #)
 
         if not self.get("guide_sent", False):
             await self.inline.bot.send_message(self._tg_id, self.strings("iguide"))
@@ -572,7 +572,7 @@ class YaMusicMod(loader.Module):
 
         await utils.answer(message, self.strings("uploading_banner"))
         now = await self.__get_now_playing()
-        
+
         if not now or now.get("paused"):
             return await utils.answer(message, self.strings("errors")["no_playing"])
 
@@ -704,7 +704,7 @@ class YaMusicMod(loader.Module):
 
         await utils.answer(message, self.strings("downloading_track"))
         now = await self.__get_now_playing()
-      
+
         if not now or now.get("paused"):
             return await utils.answer(message, self.strings("errors")["no_playing"])
 
@@ -783,10 +783,10 @@ class YaMusicMod(loader.Module):
             )
 
         now = await self.__get_now_playing()
-        
+
         if not now or now.get("paused"):
             return await utils.answer(message, self.strings("errors")["no_playing"])
-        
+
         await ym_client.users_likes_tracks_add(now["track"]["track_id"])
         await utils.answer(
             message,
@@ -806,10 +806,10 @@ class YaMusicMod(loader.Module):
             )
 
         now = await self.__get_now_playing()
-        
+
         if not now or now.get("paused"):
             return await utils.answer(message, self.strings("errors")["no_playing"])
-            
+
         await ym_client.users_likes_tracks_remove(now["track"]["track_id"])
         await utils.answer(
             message,
@@ -829,10 +829,10 @@ class YaMusicMod(loader.Module):
             )
 
         now = await self.__get_now_playing()
-        
+
         if not now or now.get("paused"):
             return await utils.answer(message, self.strings("errors")["no_playing"])
-            
+
         await ym_client.users_dislikes_tracks_add(now["track"]["track_id"])
         await utils.answer(
             message,
@@ -852,10 +852,10 @@ class YaMusicMod(loader.Module):
             )
 
         now = await self.__get_now_playing()
-        
+
         if not now or now.get("paused"):
             return await utils.answer(message, self.strings("errors")["no_playing"])
-            
+
         try:
             lyrics = await ym_client.tracks_lyrics(now["track"]["track_id"])
 
