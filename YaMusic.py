@@ -41,6 +41,7 @@ class Banners:
         meta_info: str = "Music",
         is_liked: bool = False,
         repeat_mode: str = "NONE",
+        blur: int = 0,
     ):
         self.title = title
         self.artists = artists
@@ -52,6 +53,7 @@ class Banners:
         self.meta_info = meta_info
         self.is_liked = is_liked
         self.repeat_mode = repeat_mode
+        self.blur = blur
 
     def ultra(self) -> io.BytesIO:
         WIDTH, HEIGHT = 2560, 1220
@@ -96,7 +98,9 @@ class Banners:
             background = background.crop((0, offset, bg_w, offset + new_h))
 
         background = background.resize((WIDTH, HEIGHT), Image.Resampling.LANCZOS)
-        background = background.filter(ImageFilter.GaussianBlur(radius=0))
+        
+        if self.blur > 0:
+            background = background.filter(ImageFilter.GaussianBlur(radius=self.blur))
 
         dark_overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 180))
         background = Image.alpha_composite(background, dark_overlay)
@@ -296,30 +300,6 @@ class Banners:
             (heart_x, icon_y_center + heart_size + 5),
         ]
 
-        if self.is_liked:
-            draw.ellipse(c1_box, fill="red", outline="red")
-            draw.ellipse(c2_box, fill="red", outline="red")
-            draw.polygon(tri_points, fill="red", outline="red")
-        else:
-            draw.ellipse(c1_box, fill=None, outline="red", width=3)
-            draw.ellipse(c2_box, fill=None, outline="red", width=3)
-            draw.line(
-                [
-                    (heart_x - c_r * 2 + 1, icon_y_center),
-                    (heart_x, icon_y_center + heart_size + 5),
-                ],
-                fill="red",
-                width=3,
-            )
-            draw.line(
-                [
-                    (heart_x + c_r * 2 - 1, icon_y_center),
-                    (heart_x, icon_y_center + heart_size + 5),
-                ],
-                fill="red",
-                width=3,
-            )
-
         by = io.BytesIO()
         background.save(by, format="PNG")
         by.seek(0)
@@ -378,8 +358,13 @@ class YaMusicMod(loader.Module):
                 option="banner_version",
                 default="ultra",
                 doc=lambda: self.strings["_cfg"]["banner_version"],
-                validator=loader.validators.Choice(["old", "new", "ultra"]),
-            ),)
+                validator=loader.validators.Choice(["ultra"]),
+            ),
+            loader.ConfigValue(
+                option="blur",
+                default=0,
+            ),
+        )
 
         self.ym_client = None
         self.device_id = "".join(random.choices(string.ascii_lowercase, k=16))
@@ -392,6 +377,7 @@ class YaMusicMod(loader.Module):
             #"now_play", self._now_play_placeholder, "placeholder for nowplay music" 
         # Heroku 2.0.0 feature
         #)
+        #utils.register_placeholder("duration", self._duration_placeholder, "progress bar")
 
         if not self.get("guide_sent", False):
             await self.inline.bot.send_message(self._tg_id, self.strings("iguide"))
@@ -437,7 +423,7 @@ class YaMusicMod(loader.Module):
         me = await self._client.get_me()
         self._premium = me.premium if hasattr(me, "premium") else False
 
-    @loader.loop(30)
+    @loader.loop(15)
     async def autobio(self):
         if not self.config["token"]:
             self.autobio.stop()
@@ -546,6 +532,88 @@ class YaMusicMod(loader.Module):
                 ]
             ),
         )
+
+
+    async def _duration_placeholder(self):
+        """Placeholder for {duration} with custom emoji bar"""
+        if not self.config["token"]:
+            return "No Token"
+        
+        try:
+            now = await self.__get_now_playing()
+            if not now or now.get("paused"):
+                return "<code>Not Playing</code>"
+            
+            duration = now.get("duration_ms", 0)
+            progress = now.get("progress_ms", 0)
+            
+            if duration == 0:
+                return "0%"
+                
+            percent = (progress / duration) * 100
+            
+            s_less_10 = (
+                "<emoji document_id=5454137780454067986>➖</emoji>"
+                "<emoji document_id=6158923355173949539>⭐</emoji>"
+                "<emoji document_id=6159012102083188132>⭐</emoji>"
+                "<emoji document_id=6159012102083188132>⭐</emoji>"
+                "<emoji document_id=6158753257289158944>⭐</emoji>"
+                "<emoji document_id=6156700344526049665>⭐</emoji>"
+            )
+            
+            s_10_to_20 = (
+                "<emoji document_id=5454137780454067986>➖</emoji>"
+                "<emoji document_id=6159095673556840262>⭐</emoji>"
+                "<emoji document_id=6159012102083188132>⭐</emoji>"
+                "<emoji document_id=6156933677214341691>⭐</emoji>"
+                "<emoji document_id=6158753257289158944>⭐</emoji>"
+                "<emoji document_id=6156700344526049665>⭐</emoji>"
+            )
+            
+            s_30_to_40 = (
+                "<emoji document_id=5454137780454067986>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=6158923355173949539>⭐</emoji>"
+                "<emoji document_id=6159012102083188132>⭐</emoji>"
+                "<emoji document_id=6156700344526049665>⭐</emoji>"
+            )
+            
+            s_over_50 = (
+                "<emoji document_id=5454137780454067986>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=6156933677214341691>⭐</emoji>"
+                "<emoji document_id=6156700344526049665>⭐</emoji>"
+            )
+
+            s_over_80 = (
+                "<emoji document_id=5454137780454067986>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=5454397458471750662>➖</emoji>"
+                "<emoji document_id=6156700344526049665>⭐</emoji>"
+            )
+
+            if percent < 10:
+                return s_less_10
+            elif percent < 20:
+                return s_10_to_20
+            elif percent < 30: 
+                return s_10_to_20
+            elif percent < 40:
+                return s_30_to_40
+            elif percent < 50:
+                return s_30_to_40
+            elif percent < 80:
+                return s_over_50
+            else:
+                return s_over_80
+
+        except Exception as e:
+            return f"Error: {e}"
 
     async def _download_bytes(self, url: str) -> typing.Optional[bytes]:
         try:
@@ -686,7 +754,9 @@ class YaMusicMod(loader.Module):
             meta_info=meta_info,
             is_liked=is_liked,
             repeat_mode=repeat_mode,
+            blur=self.config["blur"],
         )
+
 
         file = await utils.run_sync(
             getattr(banners, self.config["banner_version"], banners.ultra)
