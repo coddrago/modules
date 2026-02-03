@@ -1,8 +1,7 @@
-__version__ = (3, 1, 1)
+__version__ = (3, 2, 0)
 # meta banner: https://raw.githubusercontent.com/kamekuro/hikka-mods/main/banners/yamusic.png
-# packurl: https://raw.githubusercontent.com/coddrago/assets/refs/heads/main/modules/yamusic.yml
-# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
-# meta developer: @codrago_m
+# packurl: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/translations/yamusic.yml
+# meta developer: @codrago
 # old meta dev: @kamekuro xuesos
 # scope: heroku_only
 # scope: heroku_min 1.7.2
@@ -17,6 +16,7 @@ import random
 import string
 import typing
 import time
+import uuid
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 import telethon
@@ -312,13 +312,7 @@ class YaMusicMod(loader.Module):
     """The module for Yandex.Music streaming service"""
 
     strings = {
-        "name": "YaMusic",
-        "iguide": '📜 <b><a href="https://yandex-music.rtfd.io/en/main/token.html">Guide for obtaining access token for Yandex.Music</a></b>',
-    }
-
-    strings_ru = {
-        "_cls_doc": "Модуль для стримингового сервиса Яндекс.Музыка",
-        "iguide": '📜 <b><a href="https://yandex-music.rtfd.io/en/main/token.html">Гайд по получению токена Яндекс.Музыки</a></b>',
+        "name": "YaMusic"
     }
 
     def __init__(self):
@@ -373,11 +367,11 @@ class YaMusicMod(loader.Module):
         self._client: telethon.TelegramClient = client
         self._db = db
 
-        #utils.register_placeholder(
-            #"now_play", self._now_play_placeholder, "placeholder for nowplay music" 
+        utils.register_placeholder(
+            "now_play", self._now_play_placeholder, "placeholder for nowplay music" 
         # Heroku 2.0.0 feature
-        #)
-        #utils.register_placeholder("duration", self._duration_placeholder, "progress bar")
+        )
+        utils.register_placeholder("duration", self._duration_placeholder, "progress bar")
 
         if not self.get("guide_sent", False):
             await self.inline.bot.send_message(self._tg_id, self.strings("iguide"))
@@ -423,7 +417,7 @@ class YaMusicMod(loader.Module):
         me = await self._client.get_me()
         self._premium = me.premium if hasattr(me, "premium") else False
 
-    @loader.loop(15)
+    @loader.loop(30)
     async def autobio(self):
         if not self.config["token"]:
             self.autobio.stop()
@@ -543,7 +537,7 @@ class YaMusicMod(loader.Module):
             now = await self.__get_now_playing()
             if not now or now.get("paused"):
                 return "<code>Not Playing</code>"
-            
+
             duration = now.get("duration_ms", 0)
             progress = now.get("progress_ms", 0)
             
@@ -954,6 +948,97 @@ class YaMusicMod(loader.Module):
                 ),
             )
 
+    @loader.command(ru_doc="👉 Включить повтор одного трека")
+    async def yrepeatcmd(self, message: telethon.types.Message):
+        """👉 Enable track repeat (One)"""
+        if not self.config["token"]:
+             return await utils.answer(message, self.strings("errors")["no_token_or_invalid"])
+        
+        def enable_repeat(state):
+            state["player_state"]["player_queue"]["options"]["repeat_mode"] = "ONE"
+            return state
+
+        if await self.__send_ynison_command(enable_repeat):
+            await utils.answer(message, self.strings("repeat_on"))
+        else:
+            await utils.answer(message, self.strings("ynison_error"))
+
+    @loader.command(ru_doc="👉 Отключить повтор")
+    async def ydrepeatcmd(self, message: telethon.types.Message):
+        """👉 Disable track repeat"""
+        if not self.config["token"]:
+             return await utils.answer(message, self.strings("errors")["no_token_or_invalid"])
+        
+        def disable_repeat(state):
+            state["player_state"]["player_queue"]["options"]["repeat_mode"] = "NONE"
+            return state
+
+        if await self.__send_ynison_command(disable_repeat):
+            await utils.answer(message, self.strings("repeat_off"))
+        else:
+            await utils.answer(message, self.strings("ynison_error"))
+
+    @loader.command(ru_doc="👉 Следующий трек")
+    async def ynextcmd(self, message: telethon.types.Message):
+        """👉 Skip to next track"""
+        if not self.config["token"]:
+             return await utils.answer(message, self.strings("errors")["no_token_or_invalid"])
+        
+        def next_track(state):
+            idx = state["player_state"]["player_queue"]["current_playable_index"]
+            state["player_state"]["player_queue"]["current_playable_index"] = idx + 1
+            state["player_state"]["player_queue"]["entity_context"] = "BASED_ON_ENTITY_BY_DEFAULT"
+            return state
+
+        if await self.__send_ynison_command(next_track):
+            await utils.answer(message, self.strings("next_track"))
+        else:
+            await utils.answer(message, self.strings("ynison_error"))
+
+    @loader.command(ru_doc="👉 Предыдущий трек")
+    async def ybackcmd(self, message: telethon.types.Message):
+        """👉 Go to previous track"""
+        if not self.config["token"]:
+             return await utils.answer(message, self.strings("errors")["no_token_or_invalid"])
+        
+        def prev_track(state):
+            idx = state["player_state"]["player_queue"]["current_playable_index"]
+            if idx > 0:
+                state["player_state"]["player_queue"]["current_playable_index"] = idx - 1
+            state["player_state"]["player_queue"]["entity_context"] = "BASED_ON_ENTITY_BY_DEFAULT"
+            return state
+
+        if await self.__send_ynison_command(prev_track):
+            await utils.answer(message, self.strings("prev_track"))
+        else:
+            await utils.answer(message, self.strings("ynison_error"))
+
+    @loader.command(ru_doc="<0-100> 👉 Установить громкость")
+    async def yvolumecmd(self, message: telethon.types.Message):
+        """<0-100> 👉 Set volume"""
+        if not self.config["token"]:
+             return await utils.answer(message, self.strings("errors")["no_token_or_invalid"])
+        
+        args = utils.get_args_raw(message)
+        if not args or not args.isdigit():
+             return await utils.answer(message, self.strings("volume_invalid"))
+        
+        vol_int = int(args)
+        if vol_int < 0 or vol_int > 100:
+             return await utils.answer(message, self.strings("volume_invalid"))
+             
+        vol_float = vol_int / 100.0
+        
+        def set_volume(state):
+            if "device" in state["player_state"]:
+                state["player_state"]["device"]["volume_info"]["volume"] = vol_float
+            return state
+
+        if await self.__send_ynison_command(set_volume):
+            await utils.answer(message, self.strings("volume_set").format(vol=vol_int))
+        else:
+            await utils.answer(message, self.strings("ynison_error"))
+
     async def __download_track(
         self,
         client: yandex_music.ClientAsync,
@@ -977,6 +1062,118 @@ class YaMusicMod(loader.Module):
                     await asyncio.sleep(1)
                     continue
                 raise e
+    
+    async def __send_ynison_command(self, mutate_func: typing.Callable):
+        """
+        Connects to Ynison, fetches current state, applies mutation, and sends it back.
+        """
+        if not self.config["token"]:
+            return False
+
+        async def create_ws(token, ws_proto):
+            async with aiohttp.ClientSession() as session:
+                async with session.ws_connect(
+                    "wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison",
+                    headers={
+                        "Sec-WebSocket-Protocol": f"Bearer, v2, {json.dumps(ws_proto)}",
+                        "Origin": "http://music.yandex.ru",
+                        "Authorization": f"OAuth {token}",
+                    },
+                ) as ws:
+                    response = await ws.receive()
+                    return json.loads(response.data)
+
+        ws_proto = {
+            "Ynison-Device-Id": self.device_id,
+            "Ynison-Device-Info": json.dumps({"app_name": "Chrome", "type": 1}),
+        }
+
+        try:
+            data = await create_ws(self.config["token"], ws_proto)
+            ws_proto["Ynison-Redirect-Ticket"] = data["redirect_ticket"]
+            
+            initial_payload = {
+                "update_full_state": {
+                    "player_state": {
+                        "player_queue": {
+                            "current_playable_index": -1,
+                            "entity_id": "",
+                            "entity_type": "VARIOUS",
+                            "playable_list": [],
+                            "options": {"repeat_mode": "NONE"},
+                            "entity_context": "BASED_ON_ENTITY_BY_DEFAULT",
+                            "version": {
+                                "device_id": self.device_id,
+                                "version": 9021243204784341000,
+                                "timestamp_ms": 0,
+                            },
+                            "from_optional": "",
+                        },
+                        "status": {
+                            "duration_ms": 0,
+                            "paused": True,
+                            "playback_speed": 1,
+                            "progress_ms": 0,
+                            "version": {
+                                "device_id": self.device_id,
+                                "version": 8321822175199937000,
+                                "timestamp_ms": 0,
+                            },
+                        },
+                    },
+                    "device": {
+                        "capabilities": {
+                            "can_be_player": True,
+                            "can_be_remote_controller": False,
+                            "volume_granularity": 16,
+                        },
+                        "info": {
+                            "device_id": self.device_id,
+                            "type": "WEB",
+                            "title": "Chrome Browser",
+                            "app_name": "Chrome",
+                        },
+                        "volume_info": {"volume": 0},
+                        "is_shadow": True,
+                    },
+                    "is_currently_active": False,
+                },
+                "rid": str(uuid.uuid4()),
+                "player_action_timestamp_ms": 0,
+                "activity_interception_type": "DO_NOT_INTERCEPT_BY_DEFAULT",
+            }
+
+            async with aiohttp.ClientSession() as session:
+                async with session.ws_connect(
+                    f"wss://{data['host']}/ynison_state.YnisonStateService/PutYnisonState",
+                    headers={
+                        "Sec-WebSocket-Protocol": f"Bearer, v2, {json.dumps(ws_proto)}",
+                        "Origin": "http://music.yandex.ru",
+                        "Authorization": f"OAuth {self.config['token']}",
+                    },
+                ) as ws:
+                    await ws.send_str(json.dumps(initial_payload))
+                    response = await ws.receive()
+                    current_state = json.loads(response.data)
+                    
+                    if "player_state" not in current_state:
+                         return False
+
+                    new_state = mutate_func(current_state)
+                    
+                    final_payload = {
+                        "update_full_state": new_state,
+                        "rid": str(uuid.uuid4()),
+                        "player_action_timestamp_ms": int(time.time() * 1000),
+                        "activity_interception_type": "DO_NOT_INTERCEPT_BY_DEFAULT",
+                    }
+                    
+                    await ws.send_str(json.dumps(final_payload))
+                    await ws.receive() 
+                    return True
+        except Exception as e:
+            logger.error(f"Ynison Command Error: {e}")
+            return False
 
     async def __get_ynison(self):
         async def create_ws(token, ws_proto):
