@@ -30,12 +30,12 @@ en:
         no_playing_bio_text: "The text for changing «Bio» when there is no playing tracks."
         banner_version: "Banner version"
     repeat_on: "🔁 <b>Repeat enabled</b>",
-    repeat_off: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>Repeat disabled</b>",
-    next_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>Next track</b>",
-    prev_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>Previous track</b>",
-    volume_set: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>Volume set to {vol}%</b>",
-    volume_invalid: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Volume must be between 0 and 100</b>",
-    ynison_error: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Failed to send command to Yandex.Music (Ynison)</b>",
+    repeat_off: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>Repeat disabled</b>"
+    next_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>Next track</b>"
+    prev_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>Previous track</b>"
+    volume_set: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>Volume set to {vol}%</b>"
+    volume_invalid: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Volume must be between 0 and 100</b>"
+    ynison_error: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Failed to send command to Yandex.Music (Ynison)</b>"
 
 ru:
     guide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Гайд по получению токена Яндекс.Музыки</a></b>"
