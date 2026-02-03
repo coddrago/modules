@@ -29,7 +29,7 @@ en:
         autobio_text: "The text for automatically changing «Bio». May contains {performer} and {title}."
         no_playing_bio_text: "The text for changing «Bio» when there is no playing tracks."
         banner_version: "Banner version"
-    repeat_on: "🔁 <b>Repeat enabled</b>",
+    repeat_on: "🔁 <b>Repeat enabled</b>"
     repeat_off: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>Repeat disabled</b>"
     next_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>Next track</b>"
     prev_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>Previous track</b>"
