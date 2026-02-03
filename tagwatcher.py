@@ -1,9 +1,12 @@
 # meta developer: @codrago_m
 # scope: heroku_min 2.0.0
 
+
 import logging
-from .. import utils, loader, main
+
 from telethon.tl.functions.messages import MarkDialogUnreadRequest
+
+from .. import loader, main, utils
 
 logger = logging.getLogger("TagWatcher")
 
@@ -124,6 +127,7 @@ class TagWatcher(loader.Module):
             description="Here will be notifications about mentions in chats.",
             icon_emoji_id=5409025823388741707,
         )
+
         self.xdlib = await self.import_lib(
             "https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/libs/xdlib.py",
             suspend_on_error=True,
