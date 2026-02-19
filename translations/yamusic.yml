@@ -75,3 +75,42 @@ ru:
     volume_set: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>Громкость установлена на {vol}%</b>"
     volume_invalid: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Громкость должна быть от 0 до 100</b>"
     ynison_error: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Не удалось отправить команду в Яндекс.Музыку (Ynison)</b>"
+
+jp:
+    guide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Yandex.Music アクセストークン取得ガイド</a></b>"
+    search: "<emoji document_id=5474304919651491706>🎧</emoji> <b>{performer} — {title}</b>\n<emoji document_id=5242574232688298747>🎵</emoji> <b><a href=\"https://music.yandex.ru/track/{track_id}\">Yandex.Music</a> | <a href=\"https://song.link/ya/{track_id}\">song.link</a></b>"
+    downloading_track: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>オーディオをダウンロード中…</i>"
+    uploading_banner: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>バナーをアップロード中…</i>"
+    lyrics: "<emoji document_id=5956561916573782596>📜</emoji> <b>トラック <a href=\"https://music.yandex.ru/track/{track_id}\">{track}</a> の歌詞:</b>\n<blockquote expandable>{text}</blockquote>\n\n<emoji document_id=5776287149724798198>©️</emoji> <b>作詞・作曲:</b> {writers}"
+    no_lyrics: "<emoji document_id=5872829476143894491>🚫</emoji> <b>トラック <a href=\"https://music.yandex.ru/track/{track_id}\">{track}</a> には歌詞がありません！</b>"
+    errors:
+        no_query: "<emoji document_id=5872829476143894491>🚫</emoji> <b>最初に検索クエリを指定してください！</b>"
+        no_token_or_invalid: "<emoji document_id=5872829476143894491>🚫</emoji> <b>無効なアクセストークンを指定したか、指定されていません！</b>"
+        not_found: "<emoji document_id=5872829476143894491>🚫</emoji> <b>結果が見つかりません。</b>"
+        no_playing: "<emoji document_id=5872829476143894491>🚫</emoji> <b>現在何も再生していません。</b>"
+    autobio:
+        enabled: "<emoji document_id=5242574232688298747>🎧</emoji> <b>Autobio（自動プロフィール）が有効になりました。</b>"
+        disabled: "<emoji document_id=5242574232688298747>🎧</emoji> <b>Autobioが無効になりました。</b>"
+    likes:
+        liked: "<emoji document_id=5899833370052923106>❤️</emoji> <b>トラック <a href=\"https://music.yandex.ru/track/{track_id}\">{track}</a> に「いいね」しました。</b>"
+        unliked: "<emoji document_id=5992453811510186287>🖤</emoji> <b>トラック <a href=\"https://music.yandex.ru/track/{track_id}\">{track}</a> の「いいね」を取り消しました。</b>"
+        disliked: "<emoji document_id=5952055319059239589>💔</emoji> <b>トラック <a href=\"https://music.yandex.ru/track/{track_id}\">{track}</a> に「低評価」しました。</b>"
+    _entity_types:
+        VARIOUS: "あなたのキュー"
+        RADIO: "«My Vibe»"
+        PLAYLIST: "プレイリスト «{}»"
+        ALBUM: "«{}»"
+        ARTIST: "{} の人気トラック"
+    _cfg:
+        token: "Yandex.Musicのアクセストークン。"
+        now_playing_text: ".ynow および .ynowt コマンド用のキャプション。{performer}, {title}, {device}, {volume}, {playing_from}, {link}, {track_id}, {album_id} のキーワードを含めることができます。"
+        autobio_text: "«Bio»（自己紹介）を自動変更するためのテキスト。{performer} と {title} を含めることができます。"
+        no_playing_bio_text: "何も再生されていない時に «Bio» を変更するためのテキスト。"
+        banner_version: "バナーのバージョン"
+    repeat_on: "🔁 <b>リピート有効</b>"
+    repeat_off: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>リピート無効</b>"
+    next_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>次のトラック</b>"
+    prev_track: "<tg-emoji emoji-id=5873204392429096339>⏭</tg-emoji> <b>前のトラック</b>"
+    volume_set: "<tg-emoji emoji-id=5873146865637133757>➡️</tg-emoji> <b>音量を {vol}% に設定しました</b>"
+    volume_invalid: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>音量は0から100の間で指定してください</b>"
+    ynison_error: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Yandex.Music (Ynison) へのコマンド送信に失敗しました</b>"
