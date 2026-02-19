@@ -1,5 +1,5 @@
 en:
-    guide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Guide for obtaining access token for Yandex.Music</a></b>"
+    iguide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Guide for obtaining access token for Yandex.Music</a></b>"
     search: "<emoji document_id=5474304919651491706>🎧</emoji> <b>{performer} — {title}</b>\n<emoji document_id=5242574232688298747>🎵</emoji> <b><a href=\"https://music.yandex.ru/track/{track_id}\">Yandex.Music</a> | <a href=\"https://song.link/ya/{track_id}\">song.link</a></b>"
     downloading_track: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>Downloading audio…</i>"
     uploading_banner: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>Uploading banner…</i>"
@@ -38,7 +38,7 @@ en:
     ynison_error: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Failed to send command to Yandex.Music (Ynison)</b>"
 
 ru:
-    guide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Гайд по получению токена Яндекс.Музыки</a></b>"
+    iguide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Гайд по получению токена Яндекс.Музыки</a></b>"
     search: "<emoji document_id=5474304919651491706>🎧</emoji> <b>{performer} — {title}</b>\n<emoji document_id=5242574232688298747>🎵</emoji> <b><a href=\"https://music.yandex.ru/track/{track_id}\">Яндекс.Музыка</a> | <a href=\"https://song.link/ya/{track_id}\">song.link</a></b>"
     downloading_track: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>Загрузка трека…</i>"
     uploading_banner: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>Загрузка баннера…</i>"
@@ -77,7 +77,7 @@ ru:
     ynison_error: "<tg-emoji emoji-id=5465665476971471368>❌</tg-emoji> <b>Не удалось отправить команду в Яндекс.Музыку (Ynison)</b>"
 
 jp:
-    guide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Yandex.Music アクセストークン取得ガイド</a></b>"
+    iguide: "<emoji document_id=5956561916573782596>📜</emoji> <b><a href=\"https://yandex-music.rtfd.io/en/main/token.html\">Yandex.Music アクセストークン取得ガイド</a></b>"
     search: "<emoji document_id=5474304919651491706>🎧</emoji> <b>{performer} — {title}</b>\n<emoji document_id=5242574232688298747>🎵</emoji> <b><a href=\"https://music.yandex.ru/track/{track_id}\">Yandex.Music</a> | <a href=\"https://song.link/ya/{track_id}\">song.link</a></b>"
     downloading_track: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>オーディオをダウンロード中…</i>"
     uploading_banner: "\n\n<emoji document_id=5841359499146825803>🕔</emoji> <i>バナーをアップロード中…</i>"
