@@ -240,6 +240,7 @@ class DBMod(loader.Module):
                     {
                         "text": self.strings["del_all_btn"],
                         "callback": self.confirm_delete_all,
+                        "style": "danger",
                         "args": [key_path],
                     }
                 ]
@@ -290,6 +291,7 @@ class DBMod(loader.Module):
                 {
                     "text": self.strings["back_btn"],
                     "callback": self.navigate_db,
+                    "style": "primary",
                     "args": [key_path[:-1], parent_page],
                 }
             )
@@ -352,7 +354,9 @@ class DBMod(loader.Module):
             [
                 {
                     "text": self.strings["back_btn"],
+                    "style": "primary",
                     "callback": self.navigate_db,
+                    "style": "primary",
                     "args": [key_path[:-1], parent_page],
                 }
             ],
@@ -373,6 +377,7 @@ class DBMod(loader.Module):
                 {
                     "text": self.strings["back_btn"],
                     "callback": self.navigate_db,
+                    "style": "primary",
                     "args": [key_path[:-1], parent_page],
                 }
             ],
