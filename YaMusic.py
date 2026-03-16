@@ -4,7 +4,7 @@ __version__ = (3, 2, 0)
 # meta developer: @codrago
 # old meta dev: @kamekuro xuesos
 # scope: heroku_only
-# scope: heroku_min 1.7.2
+# scope: heroku_min 2.0.0
 # requires: aiohttp asyncio pillow>=10.0.0 git+https://github.com/MarshalX/yandex-music-api
 
 import aiohttp
@@ -632,7 +632,6 @@ class YaMusicMod(loader.Module):
                 message, self.strings("errors")["no_token_or_invalid"]
             )
 
-        await utils.answer(message, self.strings("uploading_banner"))
         now = await self.__get_now_playing()
 
         if not now or now.get("paused"):
