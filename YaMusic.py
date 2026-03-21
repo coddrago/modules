@@ -171,7 +171,6 @@ class Banners:
         current_y += 80
 
         bar_width = 800
-        bar_height = 6
         font_time = get_font(40)
 
         bar_start_x = center_x - (bar_width // 2)
@@ -180,11 +179,12 @@ class Banners:
 
         total_mins = self.duration // 1000 // 60
         total_secs = (self.duration // 1000) % 60
-        total_time_str = f"{total_mins}:{total_secs:02d}"
+        
+        total_time_str = f"{total_mins:02d}:{total_secs:02d}"
 
         cur_mins = self.progress // 1000 // 60
         cur_secs = (self.progress // 1000) % 60
-        cur_time_str = f"{cur_mins}:{cur_secs:02d}"
+        cur_time_str = f"{cur_mins:02d}:{cur_secs:02d}"
 
         draw_text_shadow(
             cur_time_str, (bar_start_x - 30, bar_y), font_time, anchor="rm"
@@ -193,34 +193,44 @@ class Banners:
             total_time_str, (bar_end_x + 30, bar_y), font_time, anchor="lm"
         )
 
-        draw.line(
-            [(bar_start_x, bar_y), (bar_end_x, bar_y)],
-            fill=(255, 255, 255, 80),
-            width=bar_height,
-        )
-
+        old_state = random.getstate()
+        
+        random.seed(self.title + str(self.duration))
+        
+        num_bars = 65
+        bar_spacing = bar_width / num_bars
+        bar_w = max(4, int(bar_spacing * 0.5))  
+        max_h = 50  
+        min_h = 6   
+        
         if self.duration > 0:
             progress_ratio = self.progress / self.duration
         else:
             progress_ratio = 0
-        progress_px = int(bar_width * progress_ratio)
-        if progress_px > bar_width:
-            progress_px = bar_width
+        
+        active_bars = int(num_bars * progress_ratio)
 
-        draw.line(
-            [(bar_start_x, bar_y), (bar_start_x + progress_px, bar_y)],
-            fill="white",
-            width=bar_height + 5,
-        )
-        draw.ellipse(
-            (
-                bar_start_x + progress_px - 10,
-                bar_y - 10,
-                bar_start_x + progress_px + 10,
-                bar_y + 10,
-            ),
-            fill="white",
-        )
+        for i in range(num_bars):
+            base_h = random.randint(min_h, max_h)
+            edge_factor = 1.0 - abs((i - num_bars / 2) / (num_bars / 2))
+            h = int(base_h * 0.4 + max_h * edge_factor * 0.6)
+            h = max(min_h, h)
+
+            x_center = bar_start_x + i * bar_spacing
+            left = x_center - (bar_w / 2)
+            right = x_center + (bar_w / 2)
+            top = bar_y - (h / 2)
+            bottom = bar_y + (h / 2)
+
+            color = (255, 255, 255, 255) if i < active_bars else (80, 80, 80, 100)
+
+            draw.rounded_rectangle(
+                (left, top, right, bottom), 
+                radius=int(bar_w / 2), 
+                fill=color
+            )
+
+        random.setstate(old_state)
 
         current_y += 80
 
