@@ -1,7 +1,7 @@
 __version__ = (3, 2, 0)
 # meta banner: https://raw.githubusercontent.com/kamekuro/hikka-mods/main/banners/yamusic.png
 # packurl: https://raw.githubusercontent.com/coddrago/modules/refs/heads/dev/translations/yamusic.yml
-# meta developer: @codrago
+# meta developer: @codrago_m
 # old meta dev: @kamekuro xuesos
 # scope: heroku_only
 # scope: heroku_min 2.0.0
