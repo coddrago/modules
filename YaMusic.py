@@ -635,7 +635,7 @@ class YaMusicMod(loader.Module):
     async def ynowcmd(self, message: telethon.types.Message):
         """👉 Get the banner of the track playing right now"""
 
-        await utils.answer(message, self.strings("downloading_track"))
+        await utils.answer(message, self.strings("uploading_banner"))
         ym_client = await self._get_ym_client()
         if not ym_client:
             return await utils.answer(
