@@ -2,7 +2,6 @@ __version__ = (3, 2, 0)
 # meta banner: https://raw.githubusercontent.com/kamekuro/hikka-mods/main/banners/yamusic.png
 # packurl: https://raw.githubusercontent.com/coddrago/modules/refs/heads/dev/translations/yamusic.yml
 # meta developer: @codrago_m
-# old meta dev: @kamekuro xuesos
 # scope: heroku_only
 # scope: heroku_min 2.0.0
 # requires: aiohttp asyncio pillow>=10.0.0 git+https://github.com/MarshalX/yandex-music-api
@@ -635,6 +634,8 @@ class YaMusicMod(loader.Module):
     )
     async def ynowcmd(self, message: telethon.types.Message):
         """👉 Get the banner of the track playing right now"""
+
+        await utils.answer(message, self.strings("downloading_track"))
         ym_client = await self._get_ym_client()
         if not ym_client:
             return await utils.answer(
@@ -696,10 +697,6 @@ class YaMusicMod(loader.Module):
             .format(playlist_name),
             link=f"<a href=\"https://music.yandex.ru/track/{now['playable_id']}\">Яндекс.Музыка</a>",
         )
-        try:
-            await utils.answer(message, out + self.strings("uploading_banner"))
-        except Exception:
-            pass
 
         album_obj = track_object.albums[0] if track_object.albums else None
 
@@ -825,10 +822,6 @@ class YaMusicMod(loader.Module):
             .format(playlist_name),
             link=f"<a href=\"https://music.yandex.ru/track/{now['playable_id']}\">Яндекс.Музыка</a>",
         )
-        try:
-            await utils.answer(message, out + self.strings("downloading_track"))
-        except Exception:
-            pass
 
         await utils.answer(
             message=message,
