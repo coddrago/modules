@@ -24,6 +24,8 @@ import yandex_music.exceptions
 
 from .. import loader, utils
 
+logger = logging.getLogger(__name__)
+
 class Banners:
     def __init__(
         self,
