@@ -24,9 +24,6 @@ import yandex_music.exceptions
 
 from .. import loader, utils
 
-logger = logging.getLogger(__name__)
-
-
 class Banners:
     def __init__(
         self,
@@ -324,6 +321,16 @@ class YaMusicMod(loader.Module):
         "name": "YaMusic"
     }
 
+    duration_placeholder = {
+        "start_duration": "<tg-emoji emoji-id=5262663495538742892>☀️</tg-emoji><tg-emoji emoji-id=5260381609479153468>☀️</tg-emoji>",
+        "start_full_duration": "<tg-emoji emoji-id=5262663495538742892>☀️</tg-emoji><tg-emoji emoji-id=5260609582048254485>☀️</tg-emoji>",
+        "closed_duration": "<tg-emoji emoji-id=5260467667738859177>☀️</tg-emoji>",
+        "empty_mid": "<tg-emoji emoji-id=5260415715814448198>☀️</tg-emoji>",
+        "empty_closed_duration_duration": "<tg-emoji emoji-id=5260239235608255208>☀️</tg-emoji>",
+        "end_duration_full": "<tg-emoji emoji-id=5260467667738859177>☀️</tg-emoji>",
+        "empty_closed_duration": "<tg-emoji emoji-id=5260239235608255208>☀️</tg-emoji>",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -553,67 +560,19 @@ class YaMusicMod(loader.Module):
                 return "0%"
                 
             percent = (progress / duration) * 100
+            fill_logic = int(percent // 16.66)
             
-            s_less_10 = (
-                "<emoji document_id=5454137780454067986>➖</emoji>"
-                "<emoji document_id=6158923355173949539>⭐</emoji>"
-                "<emoji document_id=6159012102083188132>⭐</emoji>"
-                "<emoji document_id=6159012102083188132>⭐</emoji>"
-                "<emoji document_id=6158753257289158944>⭐</emoji>"
-                "<emoji document_id=6156700344526049665>⭐</emoji>"
-            )
-            
-            s_10_to_20 = (
-                "<emoji document_id=5454137780454067986>➖</emoji>"
-                "<emoji document_id=6159095673556840262>⭐</emoji>"
-                "<emoji document_id=6159012102083188132>⭐</emoji>"
-                "<emoji document_id=6156933677214341691>⭐</emoji>"
-                "<emoji document_id=6158753257289158944>⭐</emoji>"
-                "<emoji document_id=6156700344526049665>⭐</emoji>"
-            )
-            
-            s_30_to_40 = (
-                "<emoji document_id=5454137780454067986>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=6158923355173949539>⭐</emoji>"
-                "<emoji document_id=6159012102083188132>⭐</emoji>"
-                "<emoji document_id=6156700344526049665>⭐</emoji>"
-            )
-            
-            s_over_50 = (
-                "<emoji document_id=5454137780454067986>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=6156933677214341691>⭐</emoji>"
-                "<emoji document_id=6156700344526049665>⭐</emoji>"
-            )
-
-            s_over_80 = (
-                "<emoji document_id=5454137780454067986>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=5454397458471750662>➖</emoji>"
-                "<emoji document_id=6156700344526049665>⭐</emoji>"
-            )
-
-            if percent < 10:
-                return s_less_10
-            elif percent < 20:
-                return s_10_to_20
-            elif percent < 30: 
-                return s_10_to_20
-            elif percent < 40:
-                return s_30_to_40
-            elif percent < 50:
-                return s_30_to_40
-            elif percent < 80:
-                return s_over_50
+            bar = self.duration_placeholder["start_full_duration"] if fill_logic >= 1 else self.duration_placeholder["start_duration"]
+            for i in range(2, 6):
+                if fill_logic >= i:
+                    bar += self.duration_placeholder["closed_duration"]
+                else:
+                    bar += self.duration_placeholder["empty_mid"]
+            if fill_logic >= 6:
+                bar += self.duration_placeholder["end_duration_full"]
             else:
-                return s_over_80
-
+                bar += self.duration_placeholder["empty_closed_duration"]
+            return bar
         except Exception as e:
             return f"Error: {e}"
 
