@@ -24,3 +24,4 @@ tagwatcher
 hardspam
 YaMusic
 MentionsTagger
+GuestBotCleaner
