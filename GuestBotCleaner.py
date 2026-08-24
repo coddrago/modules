@@ -16,7 +16,7 @@
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # ---------------------------------------------------------------------------------
 
-__version__ = (1, 0)
+__version__ = (1, 1)
 
 from telethon.errors import ChatAdminRequiredError, UserNotParticipantError
 from telethon.tl.functions.channels import GetParticipantRequest
