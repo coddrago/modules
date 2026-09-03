@@ -26,3 +26,4 @@ YaMusic
 MentionsTagger
 GuestBotCleaner
 SkyBlockHelper
+StickerToEmoji
