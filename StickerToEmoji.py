@@ -50,7 +50,7 @@ from telethon.tl.types import (
 
 from .. import loader, utils
 
-MAX_EMOJI_VIDEO_SIZE = 63 * 1024  # 64 KB лимит Telegram
+MAX_EMOJI_VIDEO_SIZE = 63 * 1024
 
 
 @loader.tds
@@ -586,8 +586,17 @@ class StickerToEmojiMod(loader.Module):
     def _resize_static(image_bytes: bytes) -> io.BytesIO:
         im = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
         im.thumbnail((100, 100), Image.Resampling.LANCZOS)
+
+        if im.width == 100 and im.height == 100:
+            output = io.BytesIO()
+            output.name = "emoji.webp"
+            im.save(output, format="WEBP", lossless=True)
+            output.seek(0)
+            return output
+
         canvas = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
-        canvas.paste(im, ((100 - im.width) // 2, (100 - im.height) // 2))
+        offset = ((100 - im.width) // 2, (100 - im.height) // 2)
+        canvas.alpha_composite(im, dest=offset)
 
         output = io.BytesIO()
         output.name = "emoji.webp"
@@ -603,53 +612,66 @@ class StickerToEmojiMod(loader.Module):
 
         out_path = in_path + "_out.webm"
         try:
-            # Адаптивный битрейт для гарантированного укладывания в лимит 64 КБ
             presets = [
                 {"crf": "34", "b": "110k", "maxrate": "130k", "bufsize": "80k"},
                 {"crf": "40", "b": "80k", "maxrate": "100k", "bufsize": "60k"},
                 {"crf": "48", "b": "50k", "maxrate": "65k", "bufsize": "40k"},
+                {"crf": "54", "b": "35k", "maxrate": "45k", "bufsize": "30k"},
             ]
 
-            for preset in presets:
-                if os.path.exists(out_path):
-                    os.remove(out_path)
+            vf_filter = (
+                "format=rgba,"
+                "scale=100:100:force_original_aspect_ratio=decrease:flags=bicubic,"
+                "pad=100:100:(ow-iw)/2:(oh-ih)/2:color=0x00000000,"
+                "format=yuva420p"
+            )
 
-                proc = await asyncio.create_subprocess_exec(
-                    "ffmpeg",
-                    "-y",
-                    "-i",
-                    in_path,
-                    "-t",
-                    "2.99",
-                    "-vf",
-                    "scale=100:100:force_original_aspect_ratio=decrease,pad=100:100:(ow-iw)/2:(oh-ih)/2:color=0x00000000",
-                    "-c:v",
-                    "libvpx-vp9",
-                    "-pix_fmt",
-                    "yuva420p",
-                    "-crf",
-                    preset["crf"],
-                    "-b:v",
-                    preset["b"],
-                    "-minrate",
-                    "20k",
-                    "-maxrate",
-                    preset["maxrate"],
-                    "-bufsize",
-                    preset["bufsize"],
-                    "-r",
-                    "30",
-                    "-an",
-                    out_path,
-                    stdout=asyncio.subprocess.DEVNULL,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-                _, stderr = await proc.communicate()
-                if proc.returncode != 0:
-                    raise RuntimeError(f"FFmpeg error: {stderr.decode(errors='ignore')}")
+            for use_vpx_dec in (True, False):
+                success = False
+                for preset in presets:
+                    if os.path.exists(out_path):
+                        os.remove(out_path)
 
-                if os.path.exists(out_path) and os.path.getsize(out_path) <= MAX_EMOJI_VIDEO_SIZE:
+                    cmd = ["ffmpeg", "-y"]
+                    if use_vpx_dec:
+                        cmd.extend(["-c:v", "libvpx-vp9"])
+                    cmd.extend([
+                        "-i", in_path,
+                        "-t", "2.99",
+                        "-vf", vf_filter,
+                        "-c:v", "libvpx-vp9",
+                        "-pix_fmt", "yuva420p",
+                        "-auto-alt-ref", "0",
+                        "-metadata:s:v:0", "alpha_mode=1",
+                        "-crf", preset["crf"],
+                        "-b:v", preset["b"],
+                        "-minrate", "20k",
+                        "-maxrate", preset["maxrate"],
+                        "-bufsize", preset["bufsize"],
+                        "-r", "30",
+                        "-an",
+                        out_path,
+                    ])
+
+                    proc = await asyncio.create_subprocess_exec(
+                        *cmd,
+                        stdout=asyncio.subprocess.DEVNULL,
+                        stderr=asyncio.subprocess.PIPE,
+                    )
+                    _, stderr = await proc.communicate()
+
+                    if proc.returncode == 0 and os.path.exists(out_path):
+                        if os.path.getsize(out_path) <= MAX_EMOJI_VIDEO_SIZE:
+                            success = True
+                            break
+                    else:
+                        break
+
+                if success:
                     break
+
+            if not os.path.exists(out_path) or os.path.getsize(out_path) == 0:
+                raise RuntimeError("Failed to compress video sticker with transparency")
 
             with open(out_path, "rb") as f:
                 output = io.BytesIO(f.read())
