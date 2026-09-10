@@ -3,13 +3,12 @@
 # ░█░░░█░░█░█░█░█▄▄▀░█▄▄█░█░▀▄░█░░█░░░█░▀░█
 # ░▀▀▀░░▀▀░░▀▀░░▀░▀▀░▀░░▀░▀▀▀▀░░▀▀░░░░▀░░▒▀
 # Name: StickerToEmoji
-# Description: Convert static, TGS animated, and WEBM video stickers/packs into custom Telegram emoji packs
+# Description: Convert static, TGS animated, and WEBM video stickers/packs into custom Telegram emoji packs directly via Telegram API
 # Author: @codrago_m
 # ---------------------------------------------------------------------------------
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # ---------------------------------------------------------------------------------
-# Author: @codrago
 # Commands: s2e, s1e
 # scope: heroku_only
 # scope: ffmpeg
@@ -29,12 +28,23 @@ import string
 import tempfile
 from PIL import Image
 
-from telethon.errors import YouBlockedUserError
-from telethon.tl.functions.messages import GetStickerSetRequest
+from telethon.errors import FloodWaitError
+from telethon.tl import functions, types
+from telethon.tl.functions.messages import GetStickerSetRequest, UploadMediaRequest
 from telethon.tl.types import (
+    DocumentAttributeCustomEmoji,
+    DocumentAttributeFilename,
+    DocumentAttributeImageSize,
     DocumentAttributeSticker,
+    DocumentAttributeVideo,
+    InputDocument,
+    InputMediaUploadedDocument,
+    InputPeerSelf,
+    InputStickerSetEmpty,
     InputStickerSetID,
+    InputStickerSetItem,
     InputStickerSetShortName,
+    InputUserSelf,
     Message,
 )
 
@@ -43,7 +53,7 @@ from .. import loader, utils
 
 @loader.tds
 class StickerToEmojiMod(loader.Module):
-    """Converts stickers and sticker packs (static, TGS, and WEBM) into custom Telegram emoji packs."""
+    """Converts stickers and sticker packs (static, TGS, and WEBM) into custom Telegram emoji packs via Telegram API."""
 
     strings = {
         "name": "StickerToEmoji",
@@ -92,14 +102,6 @@ class StickerToEmojiMod(loader.Module):
             "<b>Link:</b> <a href='{}'>Add Emoji Pack</a>"
         ),
         "btn_add": "Add Pack",
-        "bot_error": (
-            "<tg-emoji emoji-id=5253864872780769235>❗️</tg-emoji> "
-            "Response from @Stickers:\n<code>{}</code>"
-        ),
-        "unblock": (
-            "<tg-emoji emoji-id=5253864872780769235>❗️</tg-emoji> "
-            "Unblock @Stickers to continue."
-        ),
         "error": (
             "<tg-emoji emoji-id=5253864872780769235>❗️</tg-emoji> "
             "Error: <code>{}</code>"
@@ -152,14 +154,6 @@ class StickerToEmojiMod(loader.Module):
             "<b>Ссылка:</b> <a href='{}'>Добавить эмодзи</a>"
         ),
         "btn_add": "Добавить пак",
-        "bot_error": (
-            "<tg-emoji emoji-id=5253864872780769235>❗️</tg-emoji> "
-            "Ответ от @Stickers:\n<code>{}</code>"
-        ),
-        "unblock": (
-            "<tg-emoji emoji-id=5253864872780769235>❗️</tg-emoji> "
-            "Разблокируйте @Stickers для корректной работы."
-        ),
         "error": (
             "<tg-emoji emoji-id=5253864872780769235>❗️</tg-emoji> "
             "Ошибка: <code>{}</code>"
@@ -175,8 +169,8 @@ class StickerToEmojiMod(loader.Module):
         return name or "pack"
 
     @loader.command(
-        ru_doc="<пак / реплай> — конвертировать стикерпак в Premium Emoji через inline",
-        en_doc="<pack / reply> — convert sticker pack into Premium Emoji via inline",
+        ru_doc="<пак / реплай> — конвертировать стикерпак в Premium Emoji через API",
+        en_doc="<pack / reply> — convert sticker pack into Premium Emoji via API",
     )
     async def s2ecmd(self, message: Message):
         reply = await message.get_reply_message()
@@ -244,11 +238,9 @@ class StickerToEmojiMod(loader.Module):
 
         if is_anim:
             pack_type = "animated"
-            button_name = "Animated Emoji"
             docs = [d for d in all_docs if d.mime_type == "application/x-tgsticker"]
         elif is_video:
             pack_type = "video"
-            button_name = "Video Emoji"
             if not shutil.which("ffmpeg"):
                 with contextlib.suppress(Exception):
                     await form.edit(
@@ -259,7 +251,6 @@ class StickerToEmojiMod(loader.Module):
             docs = [d for d in all_docs if d.mime_type in ("video/webm", "video/mp4")]
         else:
             pack_type = "static"
-            button_name = "Static Emoji"
             docs = [d for d in all_docs if d.mime_type in ("image/webp", "image/png")]
 
         total = len(docs)
@@ -281,14 +272,13 @@ class StickerToEmojiMod(loader.Module):
             form=form,
             docs=docs,
             pack_type=pack_type,
-            button_name=button_name,
             title=title,
             clean_name=clean_name,
         )
 
     @loader.command(
-        ru_doc="<реплай на стикер> [название] — конвертировать стикер в отдельный эмодзи-пак через inline",
-        en_doc="<reply to sticker> [title] — convert single sticker into an emoji pack via inline",
+        ru_doc="<реплай на стикер> [название] — конвертировать стикер в отдельный эмодзи-пак через API",
+        en_doc="<reply to sticker> [title] — convert single sticker into an emoji pack via API",
     )
     async def s1ecmd(self, message: Message):
         reply = await message.get_reply_message()
@@ -326,10 +316,8 @@ class StickerToEmojiMod(loader.Module):
 
         if mime == "application/x-tgsticker":
             pack_type = "animated"
-            button_name = "Animated Emoji"
         elif mime in ("video/webm", "video/mp4"):
             pack_type = "video"
-            button_name = "Video Emoji"
             if not shutil.which("ffmpeg"):
                 with contextlib.suppress(Exception):
                     await form.edit(
@@ -339,7 +327,6 @@ class StickerToEmojiMod(loader.Module):
                 return
         elif mime in ("image/webp", "image/png", "image/jpeg"):
             pack_type = "static"
-            button_name = "Static Emoji"
         else:
             with contextlib.suppress(Exception):
                 await form.edit(
@@ -358,7 +345,6 @@ class StickerToEmojiMod(loader.Module):
             form=form,
             docs=[doc],
             pack_type=pack_type,
-            button_name=button_name,
             title=title,
             clean_name=clean_name,
         )
@@ -369,14 +355,15 @@ class StickerToEmojiMod(loader.Module):
         form,
         docs: list,
         pack_type: str,
-        button_name: str,
         title: str,
         clean_name: str,
     ):
         total = len(docs)
-        rnd_hash = "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
-        clean_base = self._clean_short_name(clean_name)
-        short_name = f"e_{rnd_hash}_{clean_base}"[:32].rstrip("_")
+        me = await message.client.get_me()
+        my_name = me.username or f"id{me.id}"
+        rnd_hash = "".join(random.choices(string.ascii_lowercase + string.digits, k=5))
+        clean_base = self._clean_short_name(clean_name)[:16]
+        short_name = f"e_{rnd_hash}_{clean_base}_by_{my_name}"[:64].rstrip("_")
 
         with contextlib.suppress(Exception):
             await form.edit(
@@ -384,102 +371,116 @@ class StickerToEmojiMod(loader.Module):
                 reply_markup=None,
             )
 
-        try:
-            async with message.client.conversation("@Stickers", timeout=60) as conv:
-                await conv.send_message("/cancel")
-                try:
-                    await conv.get_response()
-                except Exception:
-                    pass
+        sem = asyncio.Semaphore(6)
+        progress = [0]
+        last_edit = [0.0]
+        lock = asyncio.Lock()
 
-                await conv.send_message("/newemojipack")
-                res = await conv.get_response()
-
-                selected = False
-                if res.buttons:
-                    for row in res.buttons:
-                        for btn in row:
-                            if pack_type in btn.text.lower():
-                                await btn.click()
-                                selected = True
-                                break
-                        if selected:
-                            break
-                if not selected:
-                    await conv.send_message(button_name)
-
-                await conv.get_response()
-
-                await conv.send_message(title)
-                await conv.get_response()
-
-                for idx, doc in enumerate(docs, start=1):
-                    emoji = "⭐"
-                    for attr in doc.attributes:
-                        if isinstance(attr, DocumentAttributeSticker) and attr.alt:
-                            emoji = attr.alt
-                            break
-
-                    raw = await message.client.download_media(doc, bytes)
-
-                    if pack_type == "animated":
-                        file_obj = io.BytesIO(raw)
-                        file_obj.name = "emoji.tgs"
-                        mime = "application/x-tgsticker"
-                    elif pack_type == "video":
-                        file_obj = await self._resize_video(raw)
-                        mime = "video/webm"
-                    else:
-                        file_obj = self._resize_static(raw)
-                        mime = "image/png"
-
-                    await conv.send_file(file_obj, force_document=True, mime_type=mime)
-                    await conv.get_response()
-
-                    await conv.send_message(emoji)
-                    await conv.get_response()
-
-                    if idx % 5 == 0 or idx == total:
-                        with contextlib.suppress(Exception):
-                            await form.edit(
-                                text=self.strings("processing", message).format(
-                                    pack_type, title, idx, total
-                                ),
-                                reply_markup=None,
-                            )
-                    await asyncio.sleep(0.5)
-
-                await conv.send_message("/publish")
-                await conv.get_response()
-
-                await conv.send_message("/skip")
-                await conv.get_response()
-
-                await conv.send_message(short_name)
-                final_res = await conv.get_response()
-
-                if "https://t.me/addemoji/" in final_res.text:
-                    link = f"https://t.me/addemoji/{short_name}"
-                    btn_markup = [[{"text": self.strings("btn_add", message), "url": link}]]
-                    with contextlib.suppress(Exception):
-                        await form.edit(
-                            text=self.strings("success", message).format(
-                                title, pack_type, link
-                            ),
-                            reply_markup=btn_markup,
-                        )
-                else:
-                    with contextlib.suppress(Exception):
-                        await form.edit(
-                            text=self.strings("bot_error", message).format(final_res.text),
-                            reply_markup=None,
-                        )
-
-        except YouBlockedUserError:
+        async def _update_progress():
+            now = asyncio.get_event_loop().time()
+            if now - last_edit[0] < 2.0:
+                return
+            last_edit[0] = now
+            p = progress[0]
+            bar_len = 12
+            filled = int(p / total * bar_len)
+            bar = "█" * filled + "░" * (bar_len - filled)
             with contextlib.suppress(Exception):
                 await form.edit(
-                    text=self.strings("unblock", message),
+                    text=(
+                        f"{self.strings('processing', message).format(pack_type, title, p, total)}\n"
+                        f"<code>[{bar}]</code> {int(p / total * 100)}%"
+                    ),
                     reply_markup=None,
+                )
+
+        async def _worker(idx: int, doc):
+            emoji = "⭐"
+            for attr in doc.attributes:
+                if (
+                    isinstance(attr, (DocumentAttributeSticker, DocumentAttributeCustomEmoji))
+                    and getattr(attr, "alt", None)
+                ):
+                    emoji = attr.alt
+                    break
+
+            raw = await message.client.download_media(doc, bytes)
+            loop = asyncio.get_running_loop()
+
+            if pack_type == "animated":
+                file_obj = io.BytesIO(raw)
+                file_obj.name = "emoji.tgs"
+                mime = "application/x-tgsticker"
+            elif pack_type == "video":
+                file_obj = await self._resize_video(raw)
+                mime = "video/webm"
+            else:
+                file_obj = await loop.run_in_executor(None, self._resize_static, raw)
+                mime = "image/webp"
+
+            for attempt in range(3):
+                try:
+                    async with sem:
+                        item = await self._upload_item(
+                            client=message.client,
+                            file_obj=file_obj,
+                            mime=mime,
+                            emoji_str=emoji,
+                            pack_type=pack_type,
+                        )
+                    async with lock:
+                        progress[0] += 1
+                    if total > 1:
+                        await _update_progress()
+                    return (idx, item)
+                except FloodWaitError as fwe:
+                    await asyncio.sleep(fwe.seconds + 1)
+                except Exception as e:
+                    if attempt == 2:
+                        return None
+                    await asyncio.sleep(1)
+            return None
+
+        try:
+            tasks = [_worker(i, doc) for i, doc in enumerate(docs)]
+            results = await asyncio.gather(*tasks)
+            valid_results = [r for r in results if r is not None]
+            valid_results.sort(key=lambda x: x[0])
+            items = [item for _, item in valid_results]
+        except Exception as exc:
+            with contextlib.suppress(Exception):
+                await form.edit(
+                    text=self.strings("error", message).format(exc),
+                    reply_markup=None,
+                )
+            return
+
+        if not items:
+            with contextlib.suppress(Exception):
+                await form.edit(
+                    text=self.strings("no_stickers", message).format(pack_type),
+                    reply_markup=None,
+                )
+            return
+
+        try:
+            final_sn, err = await self._safe_create_set(
+                client=message.client,
+                title=title,
+                short_name=short_name,
+                stickers=items,
+            )
+            if err:
+                raise RuntimeError(err)
+
+            link = f"https://t.me/addemoji/{final_sn}"
+            btn_markup = [[{"text": self.strings("btn_add", message), "url": link}]]
+            with contextlib.suppress(Exception):
+                await form.edit(
+                    text=self.strings("success", message).format(
+                        title, pack_type, link
+                    ),
+                    reply_markup=btn_markup,
                 )
         except Exception as exc:
             with contextlib.suppress(Exception):
@@ -487,6 +488,98 @@ class StickerToEmojiMod(loader.Module):
                     text=self.strings("error", message).format(exc),
                     reply_markup=None,
                 )
+
+    async def _safe_create_set(
+        self,
+        client,
+        title: str,
+        short_name: str,
+        stickers: list,
+        retries: int = 3,
+    ):
+        for i in range(retries):
+            sn = short_name if i == 0 else f"{short_name}_{i+1}"
+            sn = sn[:64]
+            try:
+                await client(
+                    functions.stickers.CreateStickerSetRequest(
+                        user_id=InputUserSelf(),
+                        title=title,
+                        short_name=sn,
+                        stickers=stickers,
+                        emojis=True,
+                    )
+                )
+                return sn, None
+            except Exception as e:
+                err = str(e)
+                if (
+                    "SHORT_NAME_OCCUPIED" in err
+                    or "already exists" in err.lower()
+                    or "STICKERSET_INVALID" in err
+                ):
+                    if i < retries - 1:
+                        continue
+                return None, err
+        return None, "SHORT_NAME_OCCUPIED"
+
+    @staticmethod
+    async def _upload_item(
+        client,
+        file_obj: io.BytesIO,
+        mime: str,
+        emoji_str: str,
+        pack_type: str,
+    ) -> InputStickerSetItem:
+        attr_emoji = DocumentAttributeCustomEmoji(
+            alt=emoji_str,
+            stickerset=InputStickerSetEmpty(),
+            free=False,
+            text_color=False,
+        )
+
+        if pack_type == "animated":
+            mt = "application/x-tgsticker"
+            fn = "emoji.tgs"
+            extra_attrs = []
+        elif pack_type == "video":
+            mt = "video/webm"
+            fn = "emoji.webm"
+            extra_attrs = [
+                DocumentAttributeVideo(
+                    duration=3.0,
+                    w=100,
+                    h=100,
+                    supports_streaming=True,
+                )
+            ]
+        else:
+            mt = "image/webp"
+            fn = "emoji.webp"
+            extra_attrs = [DocumentAttributeImageSize(w=100, h=100)]
+
+        file_obj.seek(0)
+        uploaded = await client.upload_file(file_obj, file_name=fn)
+        media = InputMediaUploadedDocument(
+            file=uploaded,
+            mime_type=mt,
+            attributes=[DocumentAttributeFilename(file_name=fn), attr_emoji] + extra_attrs,
+        )
+        r = await client(
+            UploadMediaRequest(
+                peer=InputPeerSelf(),
+                media=media,
+            )
+        )
+        doc = r.document
+        return InputStickerSetItem(
+            document=InputDocument(
+                id=doc.id,
+                access_hash=doc.access_hash,
+                file_reference=doc.file_reference,
+            ),
+            emoji=emoji_str,
+        )
 
     @staticmethod
     def _resize_static(image_bytes: bytes) -> io.BytesIO:
@@ -496,8 +589,8 @@ class StickerToEmojiMod(loader.Module):
         canvas.paste(im, ((100 - im.width) // 2, (100 - im.height) // 2))
 
         output = io.BytesIO()
-        output.name = "emoji.png"
-        canvas.save(output, format="PNG")
+        output.name = "emoji.webp"
+        canvas.save(output, format="WEBP", lossless=True)
         output.seek(0)
         return output
 
