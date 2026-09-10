@@ -50,6 +50,8 @@ from telethon.tl.types import (
 
 from .. import loader, utils
 
+MAX_EMOJI_VIDEO_SIZE = 63 * 1024  # 64 KB лимит Telegram
+
 
 @loader.tds
 class StickerToEmojiMod(loader.Module):
@@ -371,7 +373,7 @@ class StickerToEmojiMod(loader.Module):
                 reply_markup=None,
             )
 
-        sem = asyncio.Semaphore(6)
+        sem = asyncio.Semaphore(4)
         progress = [0]
         last_edit = [0.0]
         lock = asyncio.Lock()
@@ -435,7 +437,7 @@ class StickerToEmojiMod(loader.Module):
                     return (idx, item)
                 except FloodWaitError as fwe:
                     await asyncio.sleep(fwe.seconds + 1)
-                except Exception as e:
+                except Exception:
                     if attempt == 2:
                         return None
                     await asyncio.sleep(1)
@@ -547,10 +549,9 @@ class StickerToEmojiMod(loader.Module):
             fn = "emoji.webm"
             extra_attrs = [
                 DocumentAttributeVideo(
-                    duration=3.0,
+                    duration=3,
                     w=100,
                     h=100,
-                    supports_streaming=True,
                 )
             ]
         else:
@@ -602,29 +603,53 @@ class StickerToEmojiMod(loader.Module):
 
         out_path = in_path + "_out.webm"
         try:
-            proc = await asyncio.create_subprocess_exec(
-                "ffmpeg",
-                "-y",
-                "-i",
-                in_path,
-                "-t",
-                "3",
-                "-vf",
-                "scale=100:100:force_original_aspect_ratio=decrease,pad=100:100:(ow-iw)/2:(oh-ih)/2:color=0x00000000",
-                "-c:v",
-                "libvpx-vp9",
-                "-b:v",
-                "200k",
-                "-r",
-                "30",
-                "-an",
-                out_path,
-                stdout=asyncio.subprocess.DEVNULL,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            _, stderr = await proc.communicate()
-            if proc.returncode != 0:
-                raise RuntimeError(f"FFmpeg error: {stderr.decode(errors='ignore')}")
+            # Адаптивный битрейт для гарантированного укладывания в лимит 64 КБ
+            presets = [
+                {"crf": "34", "b": "110k", "maxrate": "130k", "bufsize": "80k"},
+                {"crf": "40", "b": "80k", "maxrate": "100k", "bufsize": "60k"},
+                {"crf": "48", "b": "50k", "maxrate": "65k", "bufsize": "40k"},
+            ]
+
+            for preset in presets:
+                if os.path.exists(out_path):
+                    os.remove(out_path)
+
+                proc = await asyncio.create_subprocess_exec(
+                    "ffmpeg",
+                    "-y",
+                    "-i",
+                    in_path,
+                    "-t",
+                    "2.99",
+                    "-vf",
+                    "scale=100:100:force_original_aspect_ratio=decrease,pad=100:100:(ow-iw)/2:(oh-ih)/2:color=0x00000000",
+                    "-c:v",
+                    "libvpx-vp9",
+                    "-pix_fmt",
+                    "yuva420p",
+                    "-crf",
+                    preset["crf"],
+                    "-b:v",
+                    preset["b"],
+                    "-minrate",
+                    "20k",
+                    "-maxrate",
+                    preset["maxrate"],
+                    "-bufsize",
+                    preset["bufsize"],
+                    "-r",
+                    "30",
+                    "-an",
+                    out_path,
+                    stdout=asyncio.subprocess.DEVNULL,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                _, stderr = await proc.communicate()
+                if proc.returncode != 0:
+                    raise RuntimeError(f"FFmpeg error: {stderr.decode(errors='ignore')}")
+
+                if os.path.exists(out_path) and os.path.getsize(out_path) <= MAX_EMOJI_VIDEO_SIZE:
+                    break
 
             with open(out_path, "rb") as f:
                 output = io.BytesIO(f.read())
