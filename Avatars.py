@@ -20,6 +20,7 @@ import asyncio
 import os
 import shutil
 import tempfile
+import zipfile
 from telethon.errors import FloodWaitError
 from telethon.tl import types
 from telethon.tl.functions.photos import (
@@ -40,6 +41,7 @@ class AvatarsMod(loader.Module):
         "name": "Avatars",
         "no_avas": "<tg-emoji emoji-id=5287372146039861774>⛔️</tg-emoji> <b>User has no profile photos.</b>",
         "downloading": "<tg-emoji emoji-id=5872771279337033184>⬇️</tg-emoji> <b>Downloading avatar...</b>",
+        "archiving": "<tg-emoji emoji-id=5872771279337033184>⬇️</tg-emoji> <b>Downloading all avatars to avatars.zip...</b>",
         "deleted": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Successfully deleted avatars:</b> <code>{}</code>.",
         "deleted_public": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Successfully deleted public avatar.</b>",
         "invalid_args": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Specify a number, <code>all</code> or <code>-p</code>.</b>",
@@ -84,6 +86,7 @@ class AvatarsMod(loader.Module):
         "name": "Avatars",
         "no_avas": "<tg-emoji emoji-id=5287372146039861774>⛔️</tg-emoji> <b>У пользователя нет аватарок.</b>",
         "downloading": "<tg-emoji emoji-id=5872771279337033184>⬇️</tg-emoji> <b>Загрузка аватарки...</b>",
+        "archiving": "<tg-emoji emoji-id=5872771279337033184>⬇️</tg-emoji> <b>Загрузка всех аватарок в avatars.zip...</b>",
         "deleted": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Успешно удалено аватарок:</b> <code>{}</code>.",
         "deleted_public": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Публичная аватарка успешно удалена.</b>",
         "invalid_args": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Укажите число, <code>all</code> или <code>-p</code>.</b>",
@@ -137,29 +140,7 @@ class AvatarsMod(loader.Module):
             self._task = None
         await call.edit(self.strings("stopped"))
 
-    async def _resolve_avatar(self, message):
-        args = utils.get_args_raw(message)
-        reply = await message.get_reply_message()
-        target = "me"
-        public = False
-
-        if args:
-            parts = args.split()
-            clean_parts = []
-            for part in parts:
-                if part.lower() in ["-p", "--public", "public", "паблик"]:
-                    public = True
-                else:
-                    clean_parts.append(part)
-            if clean_parts:
-                target = clean_parts[0]
-                if target.isdigit() or (target.startswith("-") and target[1:].isdigit()):
-                    target = int(target)
-            elif reply:
-                target = reply.sender_id
-        elif reply:
-            target = reply.sender_id
-
+    async def _resolve_avatar(self, target, public=False):
         photo = None
         if not public:
             try:
@@ -183,9 +164,78 @@ class AvatarsMod(loader.Module):
         return photo
 
     async def getavacmd(self, message):
-        """[reply | username/id] [-p] — get current avatar (auto-detects hidden/public photo)"""
+        """[reply | username/id] [all] [-p] — get current avatar or download all to avatars.zip"""
+        args = utils.get_args_raw(message)
+        reply = await message.get_reply_message()
+        target = "me"
+        public = False
+        download_all = False
+
+        if args:
+            parts = args.split()
+            clean_parts = []
+            for part in parts:
+                p_lower = part.lower()
+                if p_lower in ["-p", "--public", "public", "паблик"]:
+                    public = True
+                elif p_lower in ["all", "все", "всё"]:
+                    download_all = True
+                else:
+                    clean_parts.append(part)
+            if clean_parts:
+                target = clean_parts[0]
+                if target.isdigit() or (target.startswith("-") and target[1:].isdigit()):
+                    target = int(target)
+            elif reply:
+                target = reply.sender_id
+        elif reply:
+            target = reply.sender_id
+
+        if download_all:
+            await utils.answer(message, self.strings("archiving"))
+            try:
+                photos = await self.client.get_profile_photos(target, limit=None)
+            except Exception:
+                return await utils.answer(message, self.strings("user_not_found"))
+
+            if not photos:
+                try:
+                    full = await self.client(GetFullUserRequest(target))
+                    fu = getattr(full, "full_user", full)
+                    fb = getattr(fu, "fallback_photo", None)
+                    if fb:
+                        photos = [fb]
+                except Exception:
+                    pass
+
+            if not photos:
+                return await utils.answer(message, self.strings("no_avas"))
+
+            temp_dir = tempfile.mkdtemp()
+            zip_dir = tempfile.mkdtemp()
+            zip_path = os.path.join(zip_dir, "avatars.zip")
+
+            try:
+                with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+                    for idx, p in enumerate(photos, 1):
+                        is_vid = bool(getattr(p, "video_sizes", None))
+                        ext = ".mp4" if is_vid else ".jpg"
+                        fname = f"avatar_{idx:03d}{ext}"
+                        fpath = os.path.join(temp_dir, fname)
+                        if is_vid:
+                            await self.client.download_media(p, file=fpath, thumb=p.video_sizes[-1])
+                        else:
+                            await self.client.download_media(p, file=fpath)
+                        zipf.write(fpath, arcname=fname)
+
+                await utils.answer(message, "", file=zip_path)
+            finally:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                shutil.rmtree(zip_dir, ignore_errors=True)
+            return
+
         try:
-            photo = await self._resolve_avatar(message)
+            photo = await self._resolve_avatar(target, public=public)
         except Exception:
             return await utils.answer(message, self.strings("user_not_found"))
 
