@@ -4,12 +4,13 @@
 #░▀▀▀░░▀▀░░▀▀░░▀░▀▀░▀░░▀░▀▀▀▀░░▀▀░░░░▀░░▒▀
 # Name: Avatars
 # Description: Flexible profile avatar management & auto-setter
-# Commands: getava, delavas, setava, stopava
+# Author: @codrago_m
 # ---------------------------------------------------------------------------------
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # ---------------------------------------------------------------------------------
 # Author: @codrago
+# Commands: getava, delavas, setava, stopava
 # scope: heroku_only
 # meta developer: @codrago_m
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
@@ -142,12 +143,12 @@ class AvatarsMod(loader.Module):
                     file=temp_path,
                     thumb=photo.video_sizes[-1],
                 )
-                await utils.answer(message, file=downloaded)
+                await utils.answer(message, "", file=downloaded)
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
         else:
-            await utils.answer(message, file=photo)
+            await utils.answer(message, "", file=photo)
 
     async def delavascmd(self, message):
         """<count | all> — delete specified number of avatars or all of them"""
