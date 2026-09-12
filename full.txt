@@ -27,3 +27,4 @@ MentionsTagger
 GuestBotCleaner
 SkyBlockHelper
 StickerToEmoji
+Avatars
