@@ -29,3 +29,4 @@ SkyBlockHelper
 StickerToEmoji
 Avatars
 VoiceToText
+CUploader
