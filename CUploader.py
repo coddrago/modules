@@ -9,7 +9,7 @@
 # 🔒    Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # ---------------------------------------------------------------------------------
-# Commands: x0, x0at, tmpfiles, uguu, quax, gofile, filebin, pixeldrain, imgbb
+# Commands: x0, x0at, tmpfiles, uguu, quax, gofile, filebin, pixeldrain, imgbb, kappa
 # scope: heroku_only
 # meta developer: @codrago_m
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
@@ -40,12 +40,12 @@ def _rand_bin(n: int = 10) -> str:
 
 
 @loader.tds
-class CUploaderMod(loader.Module):
-    """Uploads a replied file/media to a chosen file hosting service"""
+class UploaderMod(loader.Module):
+    """Uploads a replied file/media to a chosen file hosting service (0x0.st, x0.at, kappa.lol, tmpfiles.org, uguu.se, qu.ax, pixeldrain.com, gofile.io, filebin.net, imgbb.com)"""
 
     strings = {
-        "name": "C:Uploader",
-        "_cls_doc": "Uploads a replied file/media to a chosen file hosting service",
+        "name": "Uploader",
+        "_cls_doc": "Uploads a replied file/media to a chosen file hosting service (0x0.st, x0.at, kappa.lol, tmpfiles.org, uguu.se, qu.ax, pixeldrain.com, gofile.io, filebin.net, imgbb.com)",
         "no_file": "<emoji document_id=5219776129669276751>❌</emoji> <b>Reply to a file or media message</b>",
         "processing": "<emoji document_id=5474304919651491706>📤</emoji> <b>Uploading to {service}...</b>",
         "result": "<emoji document_id=5409029658794537988>✅</emoji> <b>Uploaded to {service}:</b>\n{url}",
@@ -120,6 +120,17 @@ class CUploaderMod(loader.Module):
                 if resp.status != 200 or not text.startswith("http"):
                     raise RuntimeError(text[:200])
                 return text
+
+    async def _up_kappa(self, file_bytes: bytes, filename: str) -> str:
+        data = aiohttp.FormData()
+        data.add_field("file", file_bytes, filename=filename, content_type="application/octet-stream")
+        async with self._session() as session:
+            async with session.post("https://kappa.lol/api/upload", data=data) as resp:
+                body = await resp.json(content_type=None)
+                link = body.get("link")
+                if not link:
+                    raise RuntimeError(str(body)[:200])
+                return link
 
     async def _up_tmpfiles(self, file_bytes: bytes, filename: str) -> str:
         data = aiohttp.FormData()
@@ -241,6 +252,11 @@ class CUploaderMod(loader.Module):
     async def x0at(self, message: Message):
         """(reply to a file/media) — upload to x0.at"""
         await self._run_upload(message, "x0.at", lambda fb, fn: self._up_0x0_clone("https://x0.at", fb, fn))
+
+    @loader.command(ru_doc="(в ответ на файл/медиа) — загрузить на kappa.lol")
+    async def kappa(self, message: Message):
+        """(reply to a file/media) — upload to kappa.lol"""
+        await self._run_upload(message, "kappa.lol", self._up_kappa)
 
     @loader.command(ru_doc="(в ответ на файл/медиа) — загрузить на tmpfiles.org")
     async def tmpfiles(self, message: Message):
