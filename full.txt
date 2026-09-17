@@ -28,3 +28,4 @@ GuestBotCleaner
 SkyBlockHelper
 StickerToEmoji
 Avatars
+VoiceToText
