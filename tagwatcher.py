@@ -1,10 +1,26 @@
+# ---------------------------------------------------------------------------------
+#░█▀▄░▄▀▀▄░█▀▄░█▀▀▄░█▀▀▄░█▀▀▀░▄▀▀▄░░░█▀▄▀█
+#░█░░░█░░█░█░█░█▄▄▀░█▄▄█░█░▀▄░█░░█░░░█░▀░█
+#░▀▀▀░░▀▀░░▀▀░░▀░▀▀░▀░░▀░▀▀▀▀░░▀▀░░░░▀░░▒▀
+# Name: TagWatcher
+# Description: Mention notifications and automatic private message reading
+# Author: @codrago_m
+# ---------------------------------------------------------------------------------
+# 🔒    Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ---------------------------------------------------------------------------------
+# Author: @codrago
+# Commands: tagwatcher
 # meta developer: @codrago_m
 # scope: heroku_min 2.0.0
+# meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
+# ---------------------------------------------------------------------------------
 
 
 import logging
 
-from telethon.tl.functions.messages import MarkDialogUnreadRequest
+from herokutl.tl.functions.messages import MarkDialogUnreadRequest
+from herokutl.tl.types import InputDialogPeer
 
 from .. import loader, main, utils
 
@@ -196,24 +212,48 @@ class TagWatcher(loader.Module):
         except Exception as e:
             logger.error(e)
 
-    @loader.watcher("only_pm")
+    @loader.watcher("only_messages", "only_pm", "in")
     async def pm_reader(self, m):
-        """To automatically mark private messages as read."""
-        if self.config["pm_autoread"]:
-            chat = await m.get_chat()
-            if chat.id in self.config["ignore_users"] or chat.bot:
-                return
+        """Automatically read incoming PMs, optionally keeping the unread flag."""
+        if (
+            not self.config["pm_autoread"]
+            or not getattr(m, "is_private", False)
+            or getattr(m, "out", False)
+            or not getattr(m, "id", None)
+        ):
+            return
+
+        chat_id = m.chat_id
+        if chat_id in self.config["ignore_users"]:
+            return
+
+        try:
+            if self.config["ignore_bots"]:
+                sender = await m.get_sender()
+                if sender is None:
+                    sender = await m.get_chat()
+                if sender is None:
+                    logger.warning("Cannot resolve PM sender in chat %s", chat_id)
+                    return
+                if getattr(sender, "bot", False):
+                    return
+
+            peer = await m.get_input_chat()
+            if peer is None:
+                peer = await self._client.get_input_entity(chat_id)
+
+            await self._client.send_read_acknowledge(peer, max_id=m.id)
+        except Exception:
+            logger.exception("Failed to auto-read PM %s in chat %s", m.id, chat_id)
+            return
+
+        if self.config["pm_mark_unread"]:
             try:
-                await self._client.send_read_acknowledge(
-                    chat.id, m, clear_mentions=True
+                await self._client(
+                    MarkDialogUnreadRequest(peer=InputDialogPeer(peer), unread=True)
                 )
-                if self.config["pm_mark_unread"]:
-                    peer = await self._client.get_input_entity(chat.id)
-                    await self._client(
-                        MarkDialogUnreadRequest(peer, True if not m.out else False)
-                    )
-            except Exception as e:
-                logger.error(e)
+            except Exception:
+                logger.exception("PM read, but could not mark chat %s unread", chat_id)
 
     @loader.watcher("mention", "no_pm")
     async def inform(self, m):
