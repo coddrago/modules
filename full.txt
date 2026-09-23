@@ -30,3 +30,4 @@ StickerToEmoji
 Avatars
 VoiceToText
 CUploader
+SoundGif
