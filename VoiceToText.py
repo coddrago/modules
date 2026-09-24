@@ -16,7 +16,7 @@
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # ---------------------------------------------------------------------------------
 
-__version__ = (1, 1, 1)
+__version__ = (1, 1, 2)
 
 import asyncio
 import json
@@ -25,7 +25,7 @@ import os
 import tempfile
 
 import aiohttp
-from telethon.tl.types import Message
+from herokutl.tl.types import Message
 
 from .. import loader, utils
 
@@ -59,8 +59,8 @@ class VoiceToTextMod(loader.Module):
         "empty_result": "<emoji document_id=5319088379281815108>🤷‍♀️</emoji> <b>Could not recognize speech</b>",
         "all_failed": "<emoji document_id=5980953710157632545>❌</emoji> <b>All providers failed to transcribe the audio</b>\n<code>{err}</code>",
         "ffmpeg_missing": "<emoji document_id=5980953710157632545>❌</emoji> <b>ffmpeg not found on the system</b>",
-        "auto_on": "<emoji document_id=5409029658794537988>✅</emoji> <b>Auto-transcription enabled</b>",
-        "auto_off": "<emoji document_id=5219776129669276751>❌</emoji> <b>Auto-transcription disabled</b>",
+        "auto_on": "<emoji document_id=5409029658794537988>✅</emoji> <b>Auto-transcription enabled in this chat</b>",
+        "auto_off": "<emoji document_id=5219776129669276751>❌</emoji> <b>Auto-transcription disabled in this chat</b>",
         "key_set": "<emoji document_id=5832546462478635761>🔒</emoji> <b>{provider} API key saved</b>",
         "key_removed": "<emoji document_id=5832546462478635761>🔒</emoji> <b>{provider} API key removed</b>",
         "key_usage": "<emoji document_id=5219776129669276751>❌</emoji> <b>Usage: .v2tkey &lt;groq|deepgram|mistral&gt; [api_key]</b>",
@@ -68,7 +68,6 @@ class VoiceToTextMod(loader.Module):
         "deepgram_api_key_doc": "Deepgram API key (console.deepgram.com) — fallback provider",
         "mistral_api_key_doc": "Mistral API key (console.mistral.ai) — fallback provider (Voxtral)",
         "lang_doc": "Recognition language (Google/Deepgram — ru-RU format, Groq/Mistral use the short code)",
-        "auto_watcher_doc": "Automatically transcribe all incoming voice/video messages",
         "max_duration_doc": "Maximum audio duration in seconds for auto-transcription",
     }
 
@@ -81,8 +80,9 @@ class VoiceToTextMod(loader.Module):
         "empty_result": "<emoji document_id=5319088379281815108>🤷‍♀️</emoji> <b>Не удалось разобрать речь</b>",
         "all_failed": "<emoji document_id=5980953710157632545>❌</emoji> <b>Все провайдеры не смогли расшифровать аудио</b>\n<code>{err}</code>",
         "ffmpeg_missing": "<emoji document_id=5980953710157632545>❌</emoji> <b>ffmpeg не найден в системе</b>",
-        "auto_on": "<emoji document_id=5409029658794537988>✅</emoji> <b>Автотранскрибация включена</b>",
-        "auto_off": "<emoji document_id=5219776129669276751>❌</emoji> <b>Автотранскрибация выключена</b>",
+        "auto_on": "<emoji document_id=5409029658794537988>✅</emoji> <b>Автотранскрибация включена в этом чате</b>",
+        "auto_off": "<emoji document_id=5219776129669276751>❌</emoji> <b>Автотранскрибация выключена в этом чате</b>",
+        "_cmd_doc_v2tauto": "[on/off] — включить/выключить автотранскрибацию входящих голосовых в текущем чате",
         "key_set": "<emoji document_id=5832546462478635761>🔒</emoji> <b>{provider} API ключ сохранён</b>",
         "key_removed": "<emoji document_id=5832546462478635761>🔒</emoji> <b>{provider} API ключ удалён</b>",
         "key_usage": "<emoji document_id=5219776129669276751>❌</emoji> <b>Использование: .v2tkey &lt;groq|deepgram|mistral&gt; [api_key]</b>",
@@ -90,7 +90,6 @@ class VoiceToTextMod(loader.Module):
         "deepgram_api_key_doc": "Deepgram API ключ (console.deepgram.com) — резервный провайдер",
         "mistral_api_key_doc": "Mistral API ключ (console.mistral.ai) — резервный провайдер (Voxtral)",
         "lang_doc": "Язык распознавания (для Google/Deepgram — формат ru-RU, для Groq/Mistral берётся короткий код)",
-        "auto_watcher_doc": "Автоматически расшифровывать все входящие голосовые/видеосообщения",
         "max_duration_doc": "Максимальная длительность аудио в секундах для автотранскрибации",
     }
 
@@ -119,12 +118,6 @@ class VoiceToTextMod(loader.Module):
                 "ru-RU",
                 lambda: self.strings("lang_doc"),
                 validator=loader.validators.String(),
-            ),
-            loader.ConfigValue(
-                "auto_watcher",
-                False,
-                lambda: self.strings("auto_watcher_doc"),
-                validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
                 "max_duration",
@@ -343,20 +336,30 @@ class VoiceToTextMod(loader.Module):
         if text:
             await utils.answer(message, self.strings["result"].format(text=utils.escape_html(text)))
 
-    @loader.command(ru_doc="[on/off] — включить/выключить автотранскрибацию входящих голосовых")
+    @loader.command()
     async def v2tauto(self, message: Message):
-        """[on/off] — enable/disable auto-transcription of incoming voice messages"""
+        """[on/off] — enable/disable auto-transcription of incoming voice messages in this chat"""
         args = utils.get_args_raw(message).strip().lower()
+        chat_id = message.chat_id
+        if chat_id is None:
+            return
+        chats = set(self.get("auto_chats", []))
         if args in ("on", "1", "true", "вкл"):
-            self.config["auto_watcher"] = True
+            enabled = True
         elif args in ("off", "0", "false", "выкл"):
-            self.config["auto_watcher"] = False
+            enabled = False
         else:
-            self.config["auto_watcher"] = not self.config["auto_watcher"]
+            enabled = chat_id not in chats
+
+        if enabled:
+            chats.add(chat_id)
+        else:
+            chats.discard(chat_id)
+        self.set("auto_chats", sorted(chats))
 
         await utils.answer(
             message,
-            self.strings["auto_on"] if self.config["auto_watcher"] else self.strings["auto_off"],
+            self.strings["auto_on"] if enabled else self.strings["auto_off"],
         )
 
     @loader.command(ru_doc="<groq|deepgram|mistral> [api_key] — задать/удалить ключ провайдера (резервного)")
@@ -385,7 +388,7 @@ class VoiceToTextMod(loader.Module):
 
     @loader.watcher(only_messages=True)
     async def watcher(self, message: Message):
-        if not self.config["auto_watcher"]:
+        if message.chat_id is None or message.chat_id not in self.get("auto_chats", []):
             return
         if message.out:
             return
@@ -407,4 +410,9 @@ class VoiceToTextMod(loader.Module):
             return
 
         if text:
-            await message.reply(self.strings["result"].format(text=utils.escape_html(text)))
+            await utils.answer(
+                message,
+                self.strings["result"].format(text=utils.escape_html(text)),
+                reply_to=message.id,
+                parse_mode="HTML",
+            )
