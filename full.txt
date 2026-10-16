@@ -31,3 +31,4 @@ Avatars
 VoiceToText
 CUploader
 SoundGif
+EmojiToSticker
