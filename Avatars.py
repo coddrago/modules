@@ -10,17 +10,21 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # ---------------------------------------------------------------------------------
 # Author: @codrago
-# Commands: getava, delavas, setava, stopava, gifava
+# Commands: getava, delavas, setava, stopava, gifava, avadaily
 # scope: heroku_only
 # meta developer: @codrago_m
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # ---------------------------------------------------------------------------------
 
 import asyncio
+import json
 import os
 import shutil
 import tempfile
+import time
 import zipfile
+from datetime import datetime, timedelta
+from math import ceil
 from telethon.errors import FloodWaitError
 from telethon.tl import types
 from telethon.tl.functions.photos import (
@@ -46,8 +50,17 @@ class AvatarsMod(loader.Module):
         "deleted_public": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Successfully deleted public avatar.</b>",
         "invalid_args": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Specify a number, <code>all</code> or <code>-p</code>.</b>",
         "user_not_found": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Specified user could not be found.</b>",
-        "no_media_reply": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Reply to a photo, video, or GIF.</b>",
-        "unsupported_media": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Only images and video files are supported.</b>",
+        "no_media_reply": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Reply to a photo, video, GIF, or a .zip of avatars.</b>",
+        "unsupported_media": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Only images, video files and .zip archives are supported.</b>",
+        "zip_empty": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>The archive has no avatar images.</b>",
+        "zip_bad": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Couldn't read the .zip.</b>",
+        "zip_queued": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Avatar queue started.</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Photos: <code>{total}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Days needed: <code>{days}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Finishes: <code>{finish}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Stop: <code>.stopava</code>"
+        ),
         "avatar_set": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Avatar successfully updated!</b>",
         "public_avatar_set": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Public avatar successfully updated!</b>",
         "already_running": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>A process is already running! Stop it with <code>.stopava</code>.</b>",
@@ -70,6 +83,7 @@ class AvatarsMod(loader.Module):
             "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Invalid arguments.</b>\n"
             "Usage:\n"
             "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.setava [-p]</code> — set once instantly\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.setava</code> (reply to .zip) — 100 photos/day queue\n"
             "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.setava [-p] <interval_sec> <amount></code> — start loop"
         ),
         "extracting_frames": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Extracting all video frames at native FPS...</b>",
@@ -80,6 +94,49 @@ class AvatarsMod(loader.Module):
         "gifava_done": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Animation successfully created! Total frames uploaded:</b> <code>{}</code>.",
         "no_frames": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Failed to extract frames from media.</b>",
         "btn_stop": "❌ Stop",
+        "avadaily_started": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Daily avatar autopilot started!</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Type: <code>{}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Amount: <code>{}</code> per day\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Interval: <code>{}</code> sec.\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Restart-safe. Disable: <code>.avadaily stop</code>"
+        ),
+        "avadaily_progress": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Daily avatar batch in progress...</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Progress: <b>{}/{}</b>"
+        ),
+        "avadaily_done": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Daily batch finished: {}/{} avatars set.</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Next run: <code>{}</code>"
+        ),
+        "avadaily_limit": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Telegram daily limit hit at {}/{}. FloodWait respected.</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Next run: <code>{}</code>"
+        ),
+        "avadaily_stopped": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Daily autopilot disabled.</b>",
+        "avadaily_off": (
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <b>Daily autopilot is off.</b>\n"
+            "Reply to a photo/video and send <code>.avadaily</code> to enable."
+        ),
+        "avadaily_status": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Daily autopilot status</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Amount: <code>{}</code>/day\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Interval: <code>{}</code> sec.\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Last batch set: <code>{}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Next run: <code>{}</code>"
+        ),
+        "avadaily_no_media": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Saved avatar file is missing — autopilot stopped.</b>\n"
+            "Re-enable with <code>.avadaily</code> replying to media."
+        ),
+        "avadaily_usage": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Usage:</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily</code> (reply to photo/video) — 100 avatars/day\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily 50 60</code> — 50/day, 60 sec interval\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily -p</code> — public (fallback) avatar\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily stop</code> — disable\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily status</code> — show status"
+        ),
     }
 
     strings_ru = {
@@ -91,8 +148,17 @@ class AvatarsMod(loader.Module):
         "deleted_public": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Публичная аватарка успешно удалена.</b>",
         "invalid_args": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Укажите число, <code>all</code> или <code>-p</code>.</b>",
         "user_not_found": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Не удалось найти указанного пользователя.</b>",
-        "no_media_reply": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Ответьте реплаем на фото, видео или GIF.</b>",
-        "unsupported_media": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Поддерживаются только изображения и видеофайлы.</b>",
+        "no_media_reply": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Ответьте реплаем на фото, видео, GIF или .zip с аватарками.</b>",
+        "unsupported_media": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Поддерживаются только изображения, видео и .zip-архивы.</b>",
+        "zip_empty": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>В архиве нет картинок для аватарок.</b>",
+        "zip_bad": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Не удалось прочитать .zip.</b>",
+        "zip_queued": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Очередь аватарок запущена.</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Фоток: <code>{total}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Понадобится дней: <code>{days}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Закончит: <code>{finish}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Остановить: <code>.stopava</code>"
+        ),
         "avatar_set": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Аватарка успешно установлена!</b>",
         "public_avatar_set": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Публичная аватарка успешно установлена!</b>",
         "already_running": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Процесс уже активен! Остановите его командой <code>.stopava</code>.</b>",
@@ -115,6 +181,7 @@ class AvatarsMod(loader.Module):
             "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Неверные аргументы.</b>\n"
             "Использование:\n"
             "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.setava [-p]</code> — установить 1 раз моментально\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.setava</code> (реплай на .zip) — очередь по 100 фоток в день\n"
             "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.setava [-p] <интервал_сек> <кол-во></code> — запустить цикл"
         ),
         "extracting_frames": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Извлечение всех кадров видео в исходном FPS...</b>",
@@ -125,19 +192,82 @@ class AvatarsMod(loader.Module):
         "gifava_done": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Покадровая анимация успешно создана! Загружено кадров:</b> <code>{}</code>.",
         "no_frames": "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Не удалось извлечь кадры из медиа.</b>",
         "btn_stop": "❌ Остановить",
+        "avadaily_started": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Запущен ежедневный автопилот аватарок!</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Тип: <code>{}</code>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Количество: <code>{}</code> шт. в день\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Интервал: <code>{}</code> сек.\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Переживает рестарты. Выключить: <code>.avadaily stop</code>"
+        ),
+        "avadaily_progress": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Ежедневная партия в процессе...</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Прогресс: <b>{}/{}</b>"
+        ),
+        "avadaily_done": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Ежедневная партия завершена: {}/{} аватарок.</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Следующий запуск: <code>{}</code>"
+        ),
+        "avadaily_limit": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Достигнут дневной лимит Telegram на {}/{}. FloodWait учтён.</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Следующий запуск: <code>{}</code>"
+        ),
+        "avadaily_stopped": "<tg-emoji emoji-id=5255831443816327915>🗑</tg-emoji> <b>Ежедневный автопилот выключен.</b>",
+        "avadaily_off": (
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <b>Ежедневный автопилот выключен.</b>\n"
+            "Ответь реплаем на фото/видео и отправь <code>.avadaily</code>, чтобы включить."
+        ),
+        "avadaily_status": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Статус ежемесячного автопилота</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Количество: <code>{}</code> шт./день\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Интервал: <code>{}</code> сек.\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> В прошлой партии: <code>{}</code> шт.\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> Следующий запуск: <code>{}</code>"
+        ),
+        "avadaily_no_media": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Сохранённый файл аватарки потерян — автопилот остановлен.</b>\n"
+            "Включи заново: <code>.avadaily</code> реплаем на медиа."
+        ),
+        "avadaily_usage": (
+            "<tg-emoji emoji-id=4916086774649848789>🔗</tg-emoji> <b>Использование:</b>\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily</code> (реплай на фото/видео) — 100 аватарок/день\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily 50 60</code> — 50 шт./день, интервал 60 сек.\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily -p</code> — публичная аватарка\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily stop</code> — выключить\n"
+            "<tg-emoji emoji-id=5873022839866527761>⚪️</tg-emoji> <code>.avadaily status</code> — статус"
+        ),
     }
 
     def __init__(self):
         self._task = None
+        self._daily_task = None
 
     async def on_unload(self):
-        if self._task and not self._task.done():
-            self._task.cancel()
+        for t in (self._task, self._daily_task):
+            if t and not t.done():
+                t.cancel()
+
+    async def client_ready(self, client, db):
+        try:
+            cfg = self._load_cfg()
+            if cfg.get("enabled") and not (self._daily_task and not self._daily_task.done()):
+                self._daily_task = asyncio.create_task(self._daily_loop())
+        except Exception:
+            pass
 
     async def _stop_callback(self, call):
-        if self._task and not self._task.done():
-            self._task.cancel()
-            self._task = None
+        if self._daily_task and not self._daily_task.done():
+            cfg = self._load_cfg()
+            cfg["enabled"] = False
+            if cfg.get("mode") == "queue":
+                self._clear_queue_files()
+                cfg["mode"] = "single"
+                cfg["queue_index"] = 0
+            self._save_cfg(cfg)
+        for t in (self._task, self._daily_task):
+            if t and not t.done():
+                t.cancel()
+        self._task = None
+        self._daily_task = None
         await call.edit(self.strings("stopped"))
 
     async def _resolve_avatar(self, target, public=False):
@@ -373,11 +503,76 @@ class AvatarsMod(loader.Module):
 
         await utils.answer(message, self.strings("deleted").format(len(input_photos)))
 
+    def _is_zip_reply(self, reply):
+        doc = getattr(reply, "document", None)
+        if not doc:
+            return False
+        name = ""
+        for attr in getattr(doc, "attributes", []) or []:
+            fname = getattr(attr, "file_name", None)
+            if fname:
+                name = fname
+                break
+        mime = (getattr(doc, "mime_type", None) or "").lower()
+        return name.lower().endswith(".zip") or mime in (
+            "application/zip",
+            "application/x-zip-compressed",
+        )
+
+    def _queue_dir(self):
+        path = os.path.join(tempfile.gettempdir(), "avatars_queue")
+        os.makedirs(path, exist_ok=True)
+        return path
+
+    def _clear_queue_files(self):
+        path = os.path.join(tempfile.gettempdir(), "avatars_queue")
+        if os.path.isdir(path):
+            shutil.rmtree(path, ignore_errors=True)
+
+    def _extract_avatar_zip(self, zip_path):
+        dest = self._queue_dir()
+        for name in os.listdir(dest):
+            target = os.path.join(dest, name)
+            if os.path.isdir(target):
+                shutil.rmtree(target, ignore_errors=True)
+            else:
+                try:
+                    os.remove(target)
+                except OSError:
+                    pass
+
+        image_ext = (".jpg", ".jpeg", ".png", ".webp")
+        saved = []
+        with zipfile.ZipFile(zip_path) as archive:
+            names = []
+            for info in archive.infolist():
+                if info.is_dir():
+                    continue
+                base = os.path.basename(info.filename.replace("\\", "/"))
+                if not base or base.startswith(".") or base.startswith("__"):
+                    continue
+                if not base.lower().endswith(image_ext):
+                    continue
+                names.append(info.filename)
+            names.sort(key=lambda item: os.path.basename(item.replace("\\", "/")).lower())
+            for index, name in enumerate(names, 1):
+                ext = os.path.splitext(os.path.basename(name.replace("\\", "/")))[1].lower()
+                if ext == ".jpeg":
+                    ext = ".jpg"
+                out = os.path.join(dest, f"{index:06d}{ext}")
+                with archive.open(name) as src, open(out, "wb") as dst:
+                    shutil.copyfileobj(src, dst)
+                saved.append(out)
+        return saved
+
     async def setavacmd(self, message):
-        """[-p] <interval> <count> (reply) — set avatar once instantly or loop via inline form"""
+        """[-p] <interval> <count> (reply) — set avatar once, loop, or queue a .zip by 100/day"""
         reply = await message.get_reply_message()
         if not reply or not reply.media:
             return await utils.answer(message, self.strings("no_media_reply"))
+
+        if self._is_zip_reply(reply):
+            return await self._setava_zip(message, reply)
 
         is_video = False
         if getattr(reply, "video", None):
@@ -387,7 +582,7 @@ class AvatarsMod(loader.Module):
                 is_video = True
             elif any(isinstance(x, DocumentAttributeVideo) for x in reply.document.attributes):
                 is_video = True
-            elif not reply.document.mime_type.startswith("image/"):
+            elif not (reply.document.mime_type or "").startswith("image/"):
                 return await utils.answer(message, self.strings("unsupported_media"))
 
         raw_args = utils.get_args_raw(message)
@@ -524,6 +719,91 @@ class AvatarsMod(loader.Module):
             ],
         )
 
+    async def _setava_zip(self, message, reply):
+        if (self._task and not self._task.done()) or (
+            self._daily_task and not self._daily_task.done()
+        ):
+            return await utils.answer(message, self.strings("already_running"))
+
+        raw_args = utils.get_args_raw(message)
+        parts = raw_args.split() if raw_args else []
+        fallback = False
+        nums = []
+        for part in parts:
+            if part.lower() in ["-p", "--public", "public", "паблик"]:
+                fallback = True
+            else:
+                nums.append(part)
+
+        per_day = 100
+        interval = 30.0
+        if len(nums) >= 2:
+            try:
+                interval = max(1.0, float(nums[0]))
+                per_day = max(1, min(100, int(nums[1])))
+            except ValueError:
+                return await utils.answer(message, self.strings("invalid_setava_args"))
+        elif len(nums) == 1:
+            try:
+                per_day = max(1, min(100, int(nums[0])))
+            except ValueError:
+                return await utils.answer(message, self.strings("invalid_setava_args"))
+
+        status = await utils.answer(message, self.strings("downloading"))
+        zip_file = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
+        zip_path = zip_file.name
+        zip_file.close()
+        try:
+            await self.client.download_media(reply, file=zip_path)
+            try:
+                files = await asyncio.to_thread(self._extract_avatar_zip, zip_path)
+            except zipfile.BadZipFile:
+                self._clear_queue_files()
+                return await utils.answer(status, self.strings("zip_bad"))
+        except Exception as e:
+            self._clear_queue_files()
+            return await utils.answer(status, self.strings("error").format(e))
+        finally:
+            if os.path.exists(zip_path):
+                os.remove(zip_path)
+
+        if not files:
+            return await utils.answer(status, self.strings("zip_empty"))
+
+        total = len(files)
+        days = ceil(total / per_day)
+        finish = (datetime.now() + timedelta(days=days - 1)).strftime("%d.%m.%Y")
+        cfg = self._load_cfg()
+        cfg.update(
+            {
+                "enabled": True,
+                "mode": "queue",
+                "queue_dir": self._queue_dir(),
+                "queue_index": 0,
+                "queue_total": total,
+                "count": per_day,
+                "interval": interval,
+                "public": fallback,
+                "is_video": False,
+                "last_batch": 0,
+                "next_run": time.time(),
+            }
+        )
+        cfg.pop("media_path", None)
+        self._save_cfg(cfg)
+
+        if self._daily_task and not self._daily_task.done():
+            self._daily_task.cancel()
+        self._daily_task = asyncio.create_task(self._daily_loop())
+        await utils.answer(
+            status,
+            self.strings("zip_queued").format(
+                total=total,
+                days=days,
+                finish=finish,
+            ),
+        )
+
     async def gifavacmd(self, message):
         """(reply) — create frame-by-frame avatar animation from entire video at full FPS"""
         reply = await message.get_reply_message()
@@ -620,13 +900,290 @@ class AvatarsMod(loader.Module):
         )
 
     async def stopavacmd(self, message):
-        """— stop current avatar auto-set or animation process"""
-        if not self._task or self._task.done():
+        """— stop current avatar auto-set, animation or daily autopilot"""
+        daily_running = bool(self._daily_task and not self._daily_task.done())
+        task_running = bool(self._task and not self._task.done())
+        if not daily_running and not task_running:
             return await utils.answer(message, self.strings("not_running"))
 
-        self._task.cancel()
+        if daily_running:
+            cfg = self._load_cfg()
+            cfg["enabled"] = False
+            if cfg.get("mode") == "queue":
+                self._clear_queue_files()
+                cfg["mode"] = "single"
+                cfg["queue_index"] = 0
+            self._save_cfg(cfg)
+        for t in (self._task, self._daily_task):
+            if t and not t.done():
+                t.cancel()
         self._task = None
+        self._daily_task = None
         await utils.answer(message, self.strings("stopped"))
+
+    def _cfg_path(self):
+        return os.path.join(tempfile.gettempdir(), "avadaily.json")
+
+    def _media_path(self, suffix=".jpg"):
+        return os.path.join(tempfile.gettempdir(), "avadaily_avatar" + suffix)
+
+    def _load_cfg(self):
+        try:
+            with open(self._cfg_path(), "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+
+    def _save_cfg(self, cfg):
+        try:
+            with open(self._cfg_path(), "w") as f:
+                json.dump(cfg, f)
+        except Exception:
+            pass
+
+    def _default_next_run(self):
+        now = datetime.now()
+        tomorrow = (now + timedelta(days=1)).replace(hour=12, minute=0, second=0, microsecond=0)
+        return tomorrow.timestamp()
+
+    async def avadailycmd(self, message):
+        """[reply | 50 60 | -p | stop | status | now] — daily 100-avatar autopilot (survives restarts)"""
+        args = utils.get_args_raw(message).lower()
+        parts = args.split() if args else []
+        reply = await message.get_reply_message()
+
+        if parts and parts[0] in ["stop", "off", "выкл", "стоп"]:
+            cfg = self._load_cfg()
+            cfg["enabled"] = False
+            if cfg.get("mode") == "queue":
+                self._clear_queue_files()
+                cfg["mode"] = "single"
+                cfg["queue_index"] = 0
+            self._save_cfg(cfg)
+            if self._daily_task and not self._daily_task.done():
+                self._daily_task.cancel()
+            self._daily_task = None
+            return await utils.answer(message, self.strings("avadaily_stopped"))
+
+        if parts and parts[0] in ["status", "статус"]:
+            cfg = self._load_cfg()
+            if not cfg.get("enabled"):
+                return await utils.answer(message, self.strings("avadaily_off"))
+            nxt = datetime.fromtimestamp(cfg.get("next_run", 0))
+            last = cfg.get("last_batch", "?")
+            return await utils.answer(
+                message,
+                self.strings("avadaily_status").format(
+                    cfg.get("count", 100),
+                    cfg.get("interval", 30),
+                    last,
+                    nxt.strftime("%d.%m %H:%M"),
+                ),
+            )
+
+        cfg = self._load_cfg()
+        run_now = bool(parts and parts[0] in ["now", "сейчас"])
+        public = any(p in ["-p", "--public", "public", "паблик"] for p in parts)
+
+        num_parts = [p for p in parts if p not in ["-p", "--public", "public", "паблик", "now", "сейчас"]]
+        count = 100
+        interval = 30.0
+        if len(num_parts) >= 2:
+            try:
+                count = max(1, int(num_parts[0]))
+                interval = max(1.0, float(num_parts[1]))
+            except ValueError:
+                return await utils.answer(message, self.strings("avadaily_usage"))
+        elif len(num_parts) == 1:
+            try:
+                count = max(1, int(num_parts[0]))
+            except ValueError:
+                return await utils.answer(message, self.strings("avadaily_usage"))
+
+        is_video = False
+        new_media = False
+        if reply and reply.media:
+            if getattr(reply, "video", None):
+                is_video = True
+            elif reply.document:
+                if (reply.document.mime_type or "").startswith("video/"):
+                    is_video = True
+                elif any(isinstance(x, DocumentAttributeVideo) for x in reply.document.attributes):
+                    is_video = True
+                elif not (reply.document.mime_type or "").startswith("image/"):
+                    return await utils.answer(message, self.strings("unsupported_media"))
+
+            suffix = ".mp4" if is_video else ".jpg"
+            media_path = self._media_path(suffix)
+            try:
+                await self.client.download_media(reply, file=media_path)
+            except Exception as e:
+                return await utils.answer(message, self.strings("error").format(e))
+            cfg["media_path"] = media_path
+            cfg["is_video"] = is_video
+            new_media = True
+        elif cfg.get("media_path") and os.path.exists(cfg["media_path"]):
+            media_path = cfg["media_path"]
+            is_video = cfg.get("is_video", False)
+        else:
+            return await utils.answer(message, self.strings("avadaily_usage"))
+
+        if not run_now and cfg.get("enabled") and self._daily_task and not self._daily_task.done():
+            self._daily_task.cancel()
+            self._daily_task = None
+
+        cfg.update(
+            {
+                "enabled": True,
+                "count": count,
+                "interval": interval,
+                "public": public,
+                "last_batch": cfg.get("last_batch", 0),
+                "next_run": time.time() if (new_media or run_now) else cfg.get("next_run", self._default_next_run()),
+            }
+        )
+        self._save_cfg(cfg)
+
+        if self._daily_task and not self._daily_task.done():
+            return await utils.answer(
+                message,
+                self.strings("avadaily_started").format(
+                    "Public" if public else "Profile", count, interval
+                ),
+            )
+
+        self._daily_task = asyncio.create_task(self._daily_loop())
+        await utils.answer(
+            message,
+            self.strings("avadaily_started").format(
+                "Public" if public else "Profile", count, interval
+            ),
+        )
+
+    async def _daily_loop(self):
+        try:
+            while True:
+                cfg = self._load_cfg()
+                if not cfg.get("enabled"):
+                    return
+
+                queue_mode = cfg.get("mode") == "queue"
+                media_path = cfg.get("media_path", "")
+                if not queue_mode and (not media_path or not os.path.exists(media_path)):
+                    cfg["enabled"] = False
+                    self._save_cfg(cfg)
+                    try:
+                        await self.client.send_message("me", self.strings("avadaily_no_media"))
+                    except Exception:
+                        pass
+                    return
+
+                now = time.time()
+                next_run = cfg.get("next_run", 0)
+                if now < next_run:
+                    await asyncio.sleep(min(next_run - now, 3600))
+                    continue
+
+                count = cfg.get("count", 100)
+                interval = cfg.get("interval", 30.0)
+                is_video = cfg.get("is_video", False)
+                public = cfg.get("public", False)
+                batch = []
+                if queue_mode:
+                    queue_dir = cfg.get("queue_dir") or self._queue_dir()
+                    index = int(cfg.get("queue_index", 0))
+                    names = sorted(
+                        name
+                        for name in os.listdir(queue_dir)
+                        if os.path.isfile(os.path.join(queue_dir, name))
+                    ) if os.path.isdir(queue_dir) else []
+                    if index >= len(names):
+                        cfg["enabled"] = False
+                        cfg["mode"] = "single"
+                        cfg["queue_index"] = len(names)
+                        self._save_cfg(cfg)
+                        self._clear_queue_files()
+                        try:
+                            await self.client.send_message(
+                                "me",
+                                self.strings("done").format(cfg.get("queue_total", len(names))),
+                            )
+                        except Exception:
+                            pass
+                        return
+                    batch = [
+                        os.path.join(queue_dir, name)
+                        for name in names[index:index + count]
+                    ]
+                    count = len(batch)
+
+                set_count = 0
+                done_reason = "done"
+                try:
+                    for i in range(1, count + 1):
+                        cfg = self._load_cfg()
+                        if not cfg.get("enabled"):
+                            return
+                        current = batch[i - 1] if queue_mode else media_path
+                        try:
+                            uploaded = await self.client.upload_file(current)
+                            if is_video and not queue_mode:
+                                await self.client(
+                                    UploadProfilePhotoRequest(
+                                        video=uploaded,
+                                        video_start_ts=0.0,
+                                        fallback=public,
+                                    )
+                                )
+                            else:
+                                await self.client(
+                                    UploadProfilePhotoRequest(
+                                        file=uploaded,
+                                        fallback=public,
+                                    )
+                                )
+                            set_count += 1
+                            if queue_mode:
+                                cfg = self._load_cfg()
+                                cfg["queue_index"] = int(cfg.get("queue_index", 0)) + 1
+                                cfg["last_batch"] = set_count
+                                self._save_cfg(cfg)
+                                try:
+                                    os.remove(current)
+                                except OSError:
+                                    pass
+                        except FloodWaitError as e:
+                            cfg = self._load_cfg()
+                            cfg["next_run"] = time.time() + e.seconds + 60
+                            self._save_cfg(cfg)
+                            done_reason = "limit"
+                            break
+                        if i < count:
+                            await asyncio.sleep(interval)
+                except asyncio.CancelledError:
+                    raise
+                except Exception:
+                    pass
+
+                nxt = time.time() + 86400
+                cfg = self._load_cfg()
+                if done_reason == "done":
+                    cfg["next_run"] = nxt
+                cfg["last_batch"] = set_count
+                if queue_mode and int(cfg.get("queue_index", 0)) >= int(cfg.get("queue_total", 0)):
+                    cfg["enabled"] = False
+                    cfg["mode"] = "single"
+                    self._clear_queue_files()
+                    try:
+                        await self.client.send_message(
+                            "me",
+                            self.strings("done").format(cfg.get("queue_total", set_count)),
+                        )
+                    except Exception:
+                        pass
+                self._save_cfg(cfg)
+        except asyncio.CancelledError:
+            return
 
     async def _avatar_loop(self, form, file_path, is_video, interval, count, fallback=False):
         try:
