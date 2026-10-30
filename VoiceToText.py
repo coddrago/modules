@@ -61,6 +61,8 @@ class VoiceToTextMod(loader.Module):
         "ffmpeg_missing": "<tg-emoji emoji-id=\"5267310332325437921\">💢</tg-emoji> <b>ffmpeg not found on the system</b>",
         "auto_on": "<tg-emoji emoji-id=\"5267003499861810620\">✨</tg-emoji> <b>Auto-transcription enabled in this chat</b>",
         "auto_off": "<tg-emoji emoji-id=\"5264902955911388775\">🌙</tg-emoji> <b>Auto-transcription disabled in this chat</b>",
+        "auto_on_all": "<tg-emoji emoji-id=\"5267003499861810620\">✨</tg-emoji> <b>Auto-transcription enabled in ALL chats</b>",
+        "auto_off_all": "<tg-emoji emoji-id=\"5264902955911388775\">🌙</tg-emoji> <b>Auto-transcription disabled everywhere</b>",
         "key_set": "<tg-emoji emoji-id=\"5267003499861810620\">✨</tg-emoji> <b>{provider} API key saved</b>",
         "key_removed": "<tg-emoji emoji-id=\"5264902955911388775\">🌙</tg-emoji> <b>{provider} API key removed</b>",
         "key_usage": "<tg-emoji emoji-id=\"5267310332325437921\">💢</tg-emoji> <b>Usage:</b> <code>{prefix}v2tkey &lt;groq|deepgram|mistral&gt; [api_key]</code>",
@@ -75,7 +77,7 @@ class VoiceToTextMod(loader.Module):
         "list_page": 'Page {page}/{pages} · <code>{prefix}v2tlist &lt;page&gt;</code>',
         "list_usage": '<tg-emoji emoji-id="5267310332325437921">💢</tg-emoji> <b>Enter a page from 1 to {pages}:</b> <code>{prefix}v2tlist &lt;page&gt;</code>',
         "_cmd_doc_v2t": "(reply to a voice/video message) — transcribe it to text",
-        "_cmd_doc_v2tauto": "[on/off] — enable/disable auto-transcription of incoming voice messages in this chat",
+        "_cmd_doc_v2tauto": "[on/off|all/-all] - enable/disable auto-transcription in this chat, or in all chats",
         "_cmd_doc_v2tlist": "[page] — list chats with auto-transcription enabled",
         "_cmd_doc_v2tkey": "<groq|deepgram|mistral> [api_key] — set/remove a provider API key (fallback)",
     }
@@ -91,7 +93,9 @@ class VoiceToTextMod(loader.Module):
         "ffmpeg_missing": "<tg-emoji emoji-id=\"5267310332325437921\">💢</tg-emoji> <b>ffmpeg не найден в системе</b>",
         "auto_on": "<tg-emoji emoji-id=\"5267003499861810620\">✨</tg-emoji> <b>Автотранскрибация включена в этом чате</b>",
         "auto_off": "<tg-emoji emoji-id=\"5264902955911388775\">🌙</tg-emoji> <b>Автотранскрибация выключена в этом чате</b>",
-        "_cmd_doc_v2tauto": "[on/off] — включить/выключить автотранскрибацию входящих голосовых в текущем чате",
+        "auto_on_all": "<tg-emoji emoji-id=\"5267003499861810620\">✨</tg-emoji> <b>Автотранскрибация включена во ВСЕХ чатах</b>",
+        "auto_off_all": "<tg-emoji emoji-id=\"5264902955911388775\">🌙</tg-emoji> <b>Автотранскрибация выключена везде</b>",
+        "_cmd_doc_v2tauto": "[on/off|all/-all] — включить/выключить автотранскрибацию входящих голосовых в этом чате или во всех",
         "key_set": "<tg-emoji emoji-id=\"5267003499861810620\">✨</tg-emoji> <b>{provider} API ключ сохранён</b>",
         "key_removed": "<tg-emoji emoji-id=\"5264902955911388775\">🌙</tg-emoji> <b>{provider} API ключ удалён</b>",
         "key_usage": "<tg-emoji emoji-id=\"5267310332325437921\">💢</tg-emoji> <b>Использование:</b> <code>{prefix}v2tkey &lt;groq|deepgram|mistral&gt; [api_key]</code>",
@@ -211,6 +215,8 @@ class VoiceToTextMod(loader.Module):
         "ffmpeg_missing": '<tg-emoji emoji-id="5267310332325437921">💢</tg-emoji> <b>FileNotFoundError: ffmpeg is not in PATH</b>',
         "auto_on": '<tg-emoji emoji-id="5267003499861810620">✨</tg-emoji> <b>auto_transcription[this_chat] = True</b>',
         "auto_off": '<tg-emoji emoji-id="5264902955911388775">🌙</tg-emoji> <b>auto_transcription[this_chat] = False</b>',
+        "auto_on_all": '<tg-emoji emoji-id="5267003499861810620">✨</tg-emoji> <b>auto_transcription["*"] = True</b>',
+        "auto_off_all": '<tg-emoji emoji-id="5264902955911388775">🌙</tg-emoji> <b>auto_transcription["*"] = False</b>',
         "key_set": '<tg-emoji emoji-id="5267003499861810620">✨</tg-emoji> <b>{provider}: API key persisted</b>',
         "key_removed": '<tg-emoji emoji-id="5264902955911388775">🌙</tg-emoji> <b>{provider}: API key unset</b>',
         "key_usage": '<tg-emoji emoji-id="5267310332325437921">💢</tg-emoji> <b>Usage:</b> <code>{prefix}v2tkey &lt;groq|deepgram|mistral&gt; [api_key]</code>',
@@ -565,18 +571,58 @@ class VoiceToTextMod(loader.Module):
 
     @loader.command()
     async def v2tauto(self, message: Message):
-        """[on/off] — enable/disable auto-transcription of incoming voice messages in this chat"""
+        """[on/off|-all] — enable/disable auto-transcription in this chat, or all chats"""
         args = utils.get_args_raw(message).strip().lower()
         chat_id = message.chat_id
         if chat_id is None:
             return
+
+        tokens = args.split()
+        mode = None
+        scope_all = False
+        for tok in tokens:
+            if tok in ("all", "все", "везде"):
+                scope_all = True
+            elif tok in ("-all", "-все"):
+                mode, scope_all = "off", True
+            elif tok in ("on", "1", "true", "вкл"):
+                mode = "on"
+            elif tok in ("off", "0", "false", "выкл"):
+                mode = "off"
+
+        if scope_all:
+            if mode == "off":
+                self.set("auto_all", False)
+                self.set("auto_chats_except", [])
+                self.set("auto_chats", [])
+                return await utils.answer(message, self.strings["auto_off_all"])
+            self.set("auto_all", True)
+            self.set("auto_chats_except", [])
+            self.set("auto_chats", [])
+            return await utils.answer(message, self.strings["auto_on_all"])
+
+        if self.get("auto_all", False):
+            # Global mode: current chat is toggled via the exception list
+            excepts = set(self.get("auto_chats_except", []))
+            if mode is None:
+                enabled = chat_id in excepts
+            else:
+                enabled = mode == "on"
+            if enabled:
+                excepts.discard(chat_id)
+            else:
+                excepts.add(chat_id)
+            self.set("auto_chats_except", sorted(excepts))
+            return await utils.answer(
+                message,
+                self.strings["auto_on"] if enabled else self.strings["auto_off"],
+            )
+
         chats = set(self.get("auto_chats", []))
-        if args in ("on", "1", "true", "вкл"):
-            enabled = True
-        elif args in ("off", "0", "false", "выкл"):
-            enabled = False
-        else:
+        if mode is None:
             enabled = chat_id not in chats
+        else:
+            enabled = mode == "on"
 
         if enabled:
             chats.add(chat_id)
@@ -676,7 +722,12 @@ class VoiceToTextMod(loader.Module):
 
     @loader.watcher(only_messages=True)
     async def watcher(self, message: Message):
-        if message.chat_id is None or message.chat_id not in self.get("auto_chats", []):
+        if message.chat_id is None:
+            return
+        if self.get("auto_all", False):
+            if message.chat_id in self.get("auto_chats_except", []):
+                return
+        elif message.chat_id not in self.get("auto_chats", []):
             return
         if message.out:
             return
