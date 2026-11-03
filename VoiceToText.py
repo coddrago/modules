@@ -16,7 +16,7 @@
 # meta banner: https://raw.githubusercontent.com/coddrago/modules/refs/heads/main/banner.png
 # ---------------------------------------------------------------------------------
 
-__version__ = (1, 2, 0)
+__version__ = (1, 4, 0)
 
 import asyncio
 import json
@@ -71,6 +71,7 @@ class VoiceToTextMod(loader.Module):
         "mistral_api_key_doc": "Mistral API key (console.mistral.ai) — fallback provider (Voxtral)",
         "lang_doc": "Recognition language (Google/Deepgram — ru-RU format, Groq/Mistral use the short code)",
         "max_duration_doc": "Maximum audio duration in seconds for auto-transcription",
+        "own_only_doc": "Transcribe only your own (outgoing) voice messages, ignore incoming ones",
         "list_header": '<tg-emoji emoji-id="5267003499861810620">✨</tg-emoji> <b>Chats with auto-transcription: {count}</b>',
         "list_empty": '<tg-emoji emoji-id="5267139079094442194">🫥</tg-emoji> <b>Auto-transcription is not enabled in any chat.</b>\nEnable it in the desired chat: <code>{prefix}v2tauto on</code>',
         "list_unavailable": "Chat unavailable",
@@ -104,6 +105,7 @@ class VoiceToTextMod(loader.Module):
         "mistral_api_key_doc": "Mistral API ключ (console.mistral.ai) — резервный провайдер (Voxtral)",
         "lang_doc": "Язык распознавания (для Google/Deepgram — формат ru-RU, для Groq/Mistral берётся короткий код)",
         "max_duration_doc": "Максимальная длительность аудио в секундах для автотранскрибации",
+        "own_only_doc": "Расшифровывать только свои (исходящие) голосовые, входящие игнорировать",
         "list_header": '<tg-emoji emoji-id="5267003499861810620">✨</tg-emoji> <b>Чаты с авторасшифровкой: {count}</b>',
         "list_empty": '<tg-emoji emoji-id="5267139079094442194">🫥</tg-emoji> <b>Авторасшифровка нигде не включена.</b>\nВключить в нужном чате: <code>{prefix}v2tauto on</code>',
         "list_unavailable": "Чат недоступен",
@@ -358,6 +360,12 @@ class VoiceToTextMod(loader.Module):
                 lambda: self.strings("max_duration_doc"),
                 validator=loader.validators.Integer(minimum=1),
             ),
+            loader.ConfigValue(
+                "own_only",
+                False,
+                lambda: self.strings("own_only_doc"),
+                validator=loader.validators.Boolean(),
+            ),
         )
 
     async def client_ready(self, client, db):
@@ -571,7 +579,7 @@ class VoiceToTextMod(loader.Module):
 
     @loader.command()
     async def v2tauto(self, message: Message):
-        """[on/off|-all] — enable/disable auto-transcription in this chat, or all chats"""
+        """[on/off|all|-all] — enable/disable auto-transcription in this chat, or all chats"""
         args = utils.get_args_raw(message).strip().lower()
         chat_id = message.chat_id
         if chat_id is None:
@@ -663,35 +671,46 @@ class VoiceToTextMod(loader.Module):
             await utils.answer(message, self.strings["list_empty"].format(prefix=prefix))
             return
 
-        pages = (len(chats) + 9) // 10
+        per_page = 10
+        page_count = (len(chats) + per_page - 1) // per_page
         try:
-            page = int(utils.get_args_raw(message).strip() or "1")
-        except ValueError:
-            page = 0
-        if not 1 <= page <= pages:
+            start_page = int(utils.get_args_raw(message).strip() or "1")
+        except (ValueError, AttributeError):
+            start_page = 0
+        if not 1 <= start_page <= page_count:
             await utils.answer(
                 message,
-                self.strings["list_usage"].format(prefix=prefix, pages=pages),
+                self.strings["list_usage"].format(prefix=prefix, pages=page_count),
             )
             return
 
-        offset = (page - 1) * 10
-        selected = chats[offset:offset + 10]
-        semaphore = asyncio.Semaphore(4)
+        semaphore = asyncio.Semaphore(8)
         names = await asyncio.gather(
-            *(self._auto_chat_name(chat_id, semaphore) for chat_id in selected)
+            *(self._auto_chat_name(chat_id, semaphore) for chat_id in chats)
         )
-        lines = [self.strings["list_header"].format(count=len(chats)), ""]
-        lines.extend(
-            f"{offset + index}. <b>{name}</b> — <code>{chat_id}</code>"
-            for index, (chat_id, name) in enumerate(zip(selected, names), start=1)
-        )
-        if pages > 1:
-            lines.extend((
-                "",
-                self.strings["list_page"].format(page=page, pages=pages, prefix=prefix),
-            ))
-        await utils.answer(message, "\n".join(lines), parse_mode="HTML", link_preview=False)
+
+        dot = '<tg-emoji emoji-id="5873022839866527761">⚪️</tg-emoji>'
+        header = self.strings["list_header"].format(count=len(chats))
+        pages = []
+        for index in range(page_count):
+            chunk = list(zip(chats, names))[index * per_page:(index + 1) * per_page]
+            pages.append(
+                header
+                + "\n\n"
+                + "\n".join(
+                    f"{dot} <b>{name}</b> — <code>{chat_id}</code>"
+                    for chat_id, name in chunk
+                )
+            )
+
+        if page_count > 1 and start_page > 1:
+            pages = pages[start_page - 1:] + pages[:start_page - 1]
+
+        sent = await self.inline.list(message, pages)
+        if not sent:
+            await utils.answer(
+                message, pages[0], parse_mode="HTML", link_preview=False
+            )
 
     @loader.command()
     async def v2tkey(self, message: Message):
@@ -729,7 +748,10 @@ class VoiceToTextMod(loader.Module):
                 return
         elif message.chat_id not in self.get("auto_chats", []):
             return
-        if message.out:
+        if self.config["own_only"]:
+            if not message.out:
+                return
+        elif message.out:
             return
         if not self._is_voice_media(message):
             return
